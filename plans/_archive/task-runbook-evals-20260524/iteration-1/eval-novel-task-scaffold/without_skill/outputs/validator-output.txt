@@ -1,0 +1,3 @@
+No validator script found in the task-runbook-workspace skill directory.
+Searched: D:/projects/ducat-lens/.claude/skills/task-runbook-workspace/**/*.py
+Result: 0 Python files found. No validator invoked.

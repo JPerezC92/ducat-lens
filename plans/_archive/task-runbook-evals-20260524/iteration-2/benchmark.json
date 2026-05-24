@@ -1,0 +1,161 @@
+{
+  "metadata": {
+    "skill_name": "task-runbook",
+    "skill_path": "D:/projects/ducat-lens/.claude/skills/task-runbook/",
+    "executor_model": "general-purpose",
+    "analyzer_model": "claude-opus-4-7",
+    "timestamp": "2026-05-24",
+    "iteration": 2,
+    "evals_run": ["novel-task-scaffold", "exact-replay", "structural-replay"],
+    "runs_per_configuration": 1,
+    "changes_from_iter_1": [
+      "eval_metadata.json moved to _grading/<eval-name>.json (sibling, not inside eval dir) — fixes baseline contamination",
+      "with_skill runs copied verbatim from iter-1 (no skill changes, no need to re-run)",
+      "all 3 baselines re-spawned with explicit 'do not browse parent dirs' instruction"
+    ]
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "novel-task-scaffold",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 146.2,
+        "tokens": 57351,
+        "tool_calls": 25,
+        "errors": 1
+      }
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "novel-task-scaffold",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.833,
+        "passed": 5,
+        "failed": 1,
+        "total": 6,
+        "time_seconds": 103.1,
+        "tokens": 48054,
+        "tool_calls": 19,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "finding.md exists at outputs root", "passed": true},
+        {"text": "finding.md contains verdict: replay-no", "passed": true},
+        {"text": "finding.md indicates no prior-art match", "passed": true},
+        {"text": "runbook.md scaffolded for task", "passed": true},
+        {"text": "at least one phase file copied from template", "passed": true},
+        {"text": "validator was invoked or finding reports pass", "passed": false}
+      ],
+      "notes": ["clean baseline (metadata isolated). Independent verdict matched expected. Sole failure: did not invoke validator (skill explicitly directs baseline does not)."]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "exact-replay",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 87.9,
+        "tokens": 50624,
+        "tool_calls": 15,
+        "errors": 0
+      }
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "exact-replay",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 151.4,
+        "tokens": 46261,
+        "tool_calls": 16,
+        "errors": 0
+      },
+      "notes": ["clean baseline. Correctly inferred replay-yes without skill help. Eval prompt + fixtures sufficient for competent reasoning."]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "structural-replay",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 242.6,
+        "tokens": 57866,
+        "tool_calls": 23,
+        "errors": 0
+      }
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "structural-replay",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.833,
+        "passed": 5,
+        "failed": 1,
+        "total": 6,
+        "time_seconds": 191.9,
+        "tokens": 51613,
+        "tool_calls": 20,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "finding.md exists at outputs root", "passed": true},
+        {"text": "finding.md contains verdict: replay-structural", "passed": true},
+        {"text": "finding.md cites bug-401 or bug-422 as pattern source", "passed": true},
+        {"text": "partial runbook scaffolded for task", "passed": true},
+        {"text": "finding.md indicates hypothesis inherited", "passed": true},
+        {"text": "finding.md identifies APAC as differing value", "passed": false}
+      ],
+      "notes": ["clean baseline. Verdict correct. APAC mentioned but not explicitly flagged as differing identifier in finding.md (assertion regex too strict OR finding wording too loose)."]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0},
+      "time_seconds": {"mean": 158.9, "stddev": 64.1, "min": 87.9, "max": 242.6},
+      "tokens": {"mean": 55280, "stddev": 3372, "min": 50624, "max": 57866}
+    },
+    "without_skill": {
+      "pass_rate": {"mean": 0.889, "stddev": 0.078, "min": 0.833, "max": 1.0},
+      "time_seconds": {"mean": 148.8, "stddev": 36.4, "min": 103.1, "max": 191.9},
+      "tokens": {"mean": 48643, "stddev": 2273, "min": 46261, "max": 51613}
+    },
+    "delta": {
+      "pass_rate": "+0.111",
+      "time_seconds": "+10.1",
+      "tokens": "+6637"
+    }
+  },
+  "notes": [
+    "CLEAN COMPARISON: metadata isolated in _grading/ — no contamination. Baseline subagents reasoned independently.",
+    "with_skill 100% (17/17), without_skill 88.9% (15/17), Δ +11.1%.",
+    "Eval prompts are well-specified enough that a competent general-purpose agent solves the core problem (verdict + scaffold) without skill help. Skill differentiates on structural rigor (validator invocation, identifier-source chaining wording).",
+    "ONLY 2 assertions differentiate configs across all 3 evals: (1) 'validator was invoked' in eval-1 (skill knows the path; baseline didn't find it); (2) 'finding.md identifies APAC as differing value' in eval-3 (skill explicitly surfaces differing identifier per Section 4.3; baseline mentioned APAC but didn't flag as differentiator).",
+    "Skill cost vs clean baseline: +6.8% time, +13.6% tokens. Cheaper time delta than iter-1 (which had contaminated/lucky baselines).",
+    "structural-replay with_skill remains the longest run (242s) — Section 4.3 partial-scaffold logic is the highest-value skill path.",
+    "Assertion-design recommendation: add LLM-judge assertions for semantic depth. Current assertions reward verdict labels + file presence; do not reward correct reasoning chains. A 'cargo cult' verdict label passes the same as a deeply reasoned one.",
+    "Skill value summary: real but moderate. Best ROI in structured outputs + consistency (validator integration, identifier-source chaining). Less value on raw verdict accuracy for these eval prompts (baseline got them right too)."
+  ]
+}

@@ -1,0 +1,7 @@
+No validator invoked.
+
+Searched workspace for runbook validator (validate*.py) under
+D:/projects/ducat-lens/.claude/skills/task-runbook-workspace/ — no match.
+The .py files present (iteration-1/_grade.py, iteration-2/_grade.py) are eval
+graders, not runbook structural validators, so no validator was run against
+the scaffolded runbook.

@@ -1,0 +1,6 @@
+{
+  "total_tokens": 47561,
+  "duration_ms": 106143,
+  "total_duration_seconds": 106.1,
+  "contamination_flag": "baseline subagent likely read sibling eval_metadata.json which encoded assertions; comparison validity reduced for this eval"
+}

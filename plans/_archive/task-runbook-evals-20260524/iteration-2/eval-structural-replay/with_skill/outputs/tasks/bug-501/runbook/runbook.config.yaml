@@ -1,0 +1,32 @@
+version: "1.0"
+
+runbook_file: runbook.md
+
+phase_files:
+  pattern: "phase-*.md"
+  number_extract_regex: '^phase-(\d+)-'
+
+required_headers:
+  - name: Phase
+    type: int
+  - name: Updated
+    type: datetime
+    format: "%Y-%m-%dT%H:%M"
+  - name: Replay-candidate
+    type: enum
+    allowed: [pending, "yes", structural, "no"]
+  - name: Hypotheses-outstanding
+    type: fraction
+  - name: Query-budget
+    type: fraction
+
+required_sections:
+  - Steps
+  - Output
+  - Gate
+
+required_blockquote_labels:
+  - Owner
+  - Pre
+  - Reads
+  - Writes

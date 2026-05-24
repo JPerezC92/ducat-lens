@@ -1,0 +1,6 @@
+{
+  "total_tokens": 47850,
+  "duration_ms": 107878,
+  "total_duration_seconds": 107.9,
+  "contamination_flag": "baseline subagent likely read sibling eval_metadata.json; verdict label `structural` matches expected output verbatim — suspicious for un-skilled inference"
+}

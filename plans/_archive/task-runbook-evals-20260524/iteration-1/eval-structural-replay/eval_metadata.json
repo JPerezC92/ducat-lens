@@ -1,0 +1,41 @@
+{
+  "eval_id": 3,
+  "eval_name": "structural-replay",
+  "prompt": "Scaffold a runbook for bug-501 (auth.sso, APAC, same pattern as bug-401/bug-422 but different region). Apply task-runbook skill end-to-end.",
+  "assertions": [
+    {
+      "text": "finding.md exists at outputs root",
+      "check_type": "file_exists",
+      "path": "outputs/finding.md"
+    },
+    {
+      "text": "finding.md contains verdict: replay-structural",
+      "check_type": "file_contains",
+      "path": "outputs/finding.md",
+      "pattern": "replay-structural"
+    },
+    {
+      "text": "finding.md cites bug-401 or bug-422 as pattern source",
+      "check_type": "file_contains",
+      "path": "outputs/finding.md",
+      "pattern": "(bug-401|bug-422)"
+    },
+    {
+      "text": "partial runbook scaffolded for task",
+      "check_type": "file_exists",
+      "path": "outputs/tasks/bug-501/runbook/runbook.md"
+    },
+    {
+      "text": "finding.md indicates hypothesis inherited",
+      "check_type": "file_contains",
+      "path": "outputs/finding.md",
+      "pattern": "(?i)inherit|hypothesis|adapted|partial"
+    },
+    {
+      "text": "finding.md identifies APAC as differing value",
+      "check_type": "file_contains",
+      "path": "outputs/finding.md",
+      "pattern": "APAC"
+    }
+  ]
+}

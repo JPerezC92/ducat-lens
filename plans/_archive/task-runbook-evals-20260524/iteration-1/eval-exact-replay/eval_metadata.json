@@ -1,0 +1,35 @@
+{
+  "eval_id": 2,
+  "eval_name": "exact-replay",
+  "prompt": "Scaffold a runbook for bug-455 (auth.sso, EU, same symptom as fixture bug-401). Apply task-runbook skill end-to-end.",
+  "assertions": [
+    {
+      "text": "finding.md exists at outputs root",
+      "check_type": "file_exists",
+      "path": "outputs/finding.md"
+    },
+    {
+      "text": "finding.md contains verdict: replay-yes",
+      "check_type": "file_contains",
+      "path": "outputs/finding.md",
+      "pattern": "replay-yes"
+    },
+    {
+      "text": "finding.md cites bug-401 as matched prior-art",
+      "check_type": "file_contains",
+      "path": "outputs/finding.md",
+      "pattern": "bug-401"
+    },
+    {
+      "text": "no runbook directory created (replay-yes implies skip scaffold)",
+      "check_type": "file_not_exists",
+      "path": "outputs/tasks/bug-455/runbook/runbook.md"
+    },
+    {
+      "text": "finding.md recommends reusing prior solution",
+      "check_type": "file_contains",
+      "path": "outputs/finding.md",
+      "pattern": "(?i)reuse|reus|adjust|prior solution|hand off|hand-off"
+    }
+  ]
+}

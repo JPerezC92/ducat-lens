@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "finding.md exists at outputs root",
+      "passed": true,
+      "evidence": "file present: outputs\\finding.md"
+    },
+    {
+      "text": "finding.md contains verdict: replay-structural",
+      "passed": true,
+      "evidence": "pattern matched in outputs/finding.md"
+    },
+    {
+      "text": "finding.md cites bug-401 or bug-422 as pattern source",
+      "passed": true,
+      "evidence": "pattern matched in outputs/finding.md"
+    },
+    {
+      "text": "partial runbook scaffolded for task",
+      "passed": true,
+      "evidence": "file present: outputs\\tasks\\bug-501\\runbook\\runbook.md"
+    },
+    {
+      "text": "finding.md indicates hypothesis inherited",
+      "passed": true,
+      "evidence": "pattern matched in outputs/finding.md"
+    },
+    {
+      "text": "finding.md identifies APAC as differing value",
+      "passed": true,
+      "evidence": "pattern matched in outputs/finding.md"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

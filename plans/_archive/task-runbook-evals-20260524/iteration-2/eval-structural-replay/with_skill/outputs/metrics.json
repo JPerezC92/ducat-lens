@@ -1,0 +1,32 @@
+{
+  "task_id": "bug-501",
+  "module": "auth.sso",
+  "country": "APAC",
+  "environment": "production",
+  "verdict": "replay-structural",
+  "prior_art_matches": [
+    {
+      "path": ".claude/skills/task-runbook-workspace/_fixtures/prior-art/2026-04-12_bug-401_login-timeout-eu.md",
+      "role": "primary",
+      "matched_fields": ["module", "symptom-keywords"]
+    },
+    {
+      "path": ".claude/skills/task-runbook-workspace/_fixtures/prior-art/2026-04-18_bug-422_login-timeout-us.md",
+      "role": "confirming-replay",
+      "matched_fields": ["module", "symptom-keywords"]
+    }
+  ],
+  "scaffold_created": true,
+  "scaffold_path": ".claude/skills/task-runbook-workspace/iteration-1/eval-structural-replay/with_skill/outputs/tasks/bug-501/runbook/",
+  "partial_scaffold": true,
+  "hypothesis_phase_skipped": false,
+  "hypothesis_phase_skipped_note": "template has no dedicated frame-hypothesis phase; inherited hypothesis recorded inline in runbook.md finding block and phase-02-priorart.md instead",
+  "validate_phase_prepopulated": true,
+  "identifier_source": "bug-401",
+  "validator_run": true,
+  "validator_exit_code": 0,
+  "validator_status": "pass",
+  "rag_used": false,
+  "sla_due": "2026-05-30T18:00",
+  "skill_version": "1.0.0"
+}

@@ -1,0 +1,188 @@
+{
+  "metadata": {
+    "skill_name": "task-runbook",
+    "skill_path": "D:/projects/ducat-lens/.claude/skills/task-runbook/",
+    "executor_model": "general-purpose",
+    "analyzer_model": "claude-opus-4-7",
+    "timestamp": "2026-05-24",
+    "evals_run": ["novel-task-scaffold", "exact-replay", "structural-replay"],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "novel-task-scaffold",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 146.2,
+        "tokens": 57351,
+        "tool_calls": 25,
+        "errors": 1
+      },
+      "expectations": [
+        {"text": "finding.md exists at outputs root", "passed": true},
+        {"text": "finding.md contains verdict: replay-no", "passed": true},
+        {"text": "finding.md indicates no prior-art match", "passed": true},
+        {"text": "runbook.md scaffolded for task", "passed": true},
+        {"text": "at least one phase file copied from template", "passed": true},
+        {"text": "validator was invoked or finding reports pass", "passed": true}
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "novel-task-scaffold",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.833,
+        "passed": 5,
+        "failed": 1,
+        "total": 6,
+        "time_seconds": 175.5,
+        "tokens": 47416,
+        "tool_calls": 19,
+        "errors": 1
+      },
+      "expectations": [
+        {"text": "finding.md exists at outputs root", "passed": true},
+        {"text": "finding.md contains verdict: replay-no", "passed": true},
+        {"text": "finding.md indicates no prior-art match", "passed": true},
+        {"text": "runbook.md scaffolded for task", "passed": true},
+        {"text": "at least one phase file copied from template", "passed": true},
+        {"text": "validator was invoked or finding reports pass", "passed": false}
+      ],
+      "notes": ["baseline likely read sibling eval_metadata.json (contamination)"]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "exact-replay",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 87.9,
+        "tokens": 50624,
+        "tool_calls": 15,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "finding.md exists at outputs root", "passed": true},
+        {"text": "finding.md contains verdict: replay-yes", "passed": true},
+        {"text": "finding.md cites bug-401 as matched prior-art", "passed": true},
+        {"text": "no runbook directory created (replay-yes implies skip scaffold)", "passed": true},
+        {"text": "finding.md recommends reusing prior solution", "passed": true}
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "exact-replay",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 106.1,
+        "tokens": 47561,
+        "tool_calls": 15,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "finding.md exists at outputs root", "passed": true},
+        {"text": "finding.md contains verdict: replay-yes", "passed": true},
+        {"text": "finding.md cites bug-401 as matched prior-art", "passed": true},
+        {"text": "no runbook directory created (replay-yes implies skip scaffold)", "passed": true},
+        {"text": "finding.md recommends reusing prior solution", "passed": true}
+      ],
+      "notes": ["baseline likely read sibling eval_metadata.json — pass rate not independently earned"]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "structural-replay",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 242.6,
+        "tokens": 57866,
+        "tool_calls": 23,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "finding.md exists at outputs root", "passed": true},
+        {"text": "finding.md contains verdict: replay-structural", "passed": true},
+        {"text": "finding.md cites bug-401 or bug-422 as pattern source", "passed": true},
+        {"text": "partial runbook scaffolded for task", "passed": true},
+        {"text": "finding.md indicates hypothesis inherited", "passed": true},
+        {"text": "finding.md identifies APAC as differing value", "passed": true}
+      ],
+      "notes": ["longest run — 242s; deep skill reading + Section 4.3 partial-scaffold logic"]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "structural-replay",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.833,
+        "passed": 5,
+        "failed": 1,
+        "total": 6,
+        "time_seconds": 107.9,
+        "tokens": 47850,
+        "tool_calls": 18,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "finding.md exists at outputs root", "passed": true},
+        {"text": "finding.md contains verdict: replay-structural", "passed": true},
+        {"text": "finding.md cites bug-401 or bug-422 as pattern source", "passed": true},
+        {"text": "partial runbook scaffolded for task", "passed": true},
+        {"text": "finding.md indicates hypothesis inherited", "passed": true},
+        {"text": "finding.md identifies APAC as differing value", "passed": false}
+      ],
+      "notes": ["baseline likely read sibling eval_metadata.json (contamination); verdict label `structural` matches expected verbatim"]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0},
+      "time_seconds": {"mean": 158.9, "stddev": 64.1, "min": 87.9, "max": 242.6},
+      "tokens": {"mean": 55280, "stddev": 3372, "min": 50624, "max": 57866}
+    },
+    "without_skill": {
+      "pass_rate": {"mean": 0.889, "stddev": 0.078, "min": 0.833, "max": 1.0},
+      "time_seconds": {"mean": 129.8, "stddev": 31.5, "min": 106.1, "max": 175.5},
+      "tokens": {"mean": 47609, "stddev": 178, "min": 47416, "max": 47850}
+    },
+    "delta": {
+      "pass_rate": "+0.111",
+      "time_seconds": "+29.1",
+      "tokens": "+7671"
+    }
+  },
+  "notes": [
+    "CONTAMINATION: all 3 baseline (without_skill) subagents likely read the sibling eval_metadata.json file which encoded the assertions verbatim. Their pass rates are not independently earned. True baseline performance is unknown.",
+    "Recommend iteration-2: relocate eval_metadata.json to a sibling _grading/ dir not visible to the executor subagent.",
+    "with_skill achieved 17/17 expectations across 3 evals (100%). Each verdict tier (replay-yes/replay-structural/replay-no) was correctly triggered.",
+    "with_skill time/token cost is 22% higher on time and 16% higher on tokens vs baseline — cost of reading the full SKILL.md before acting. Acceptable for the rigor it adds.",
+    "structural-replay with_skill took 242s (longest run) — Section 4.3 partial-scaffold logic + identifier-source chaining is non-trivial to execute correctly.",
+    "Both novel-task-scaffold runs encountered 1 Write-without-Read error each — same harness friction, not skill-induced.",
+    "The validator-was-invoked assertion (eval-1 baseline) is the only differentiating assertion across configurations. All other assertions check structural / textual properties that even an unaided agent can satisfy when told what's expected.",
+    "Assertion design caveat: assertions check presence + verdict labels but NOT semantic depth (e.g. does the finding correctly explain WHY APAC matches the EU/US pattern). A hallucinated but well-labeled output would pass."
+  ]
+}

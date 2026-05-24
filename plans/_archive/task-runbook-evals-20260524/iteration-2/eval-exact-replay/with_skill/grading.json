@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "finding.md exists at outputs root",
+      "passed": true,
+      "evidence": "file present: outputs\\finding.md"
+    },
+    {
+      "text": "finding.md contains verdict: replay-yes",
+      "passed": true,
+      "evidence": "pattern matched in outputs/finding.md"
+    },
+    {
+      "text": "finding.md cites bug-401 as matched prior-art",
+      "passed": true,
+      "evidence": "pattern matched in outputs/finding.md"
+    },
+    {
+      "text": "no runbook directory created (replay-yes implies skip scaffold)",
+      "passed": true,
+      "evidence": "file correctly absent: outputs/tasks/bug-455/runbook/runbook.md"
+    },
+    {
+      "text": "finding.md recommends reusing prior solution",
+      "passed": true,
+      "evidence": "pattern matched in outputs/finding.md"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}
