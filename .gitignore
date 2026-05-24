@@ -1,0 +1,61 @@
+# Node / pnpm
+node_modules/
+.pnpm-store/
+dist/
+build/
+.vite/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Build artifacts
+*.tsbuildinfo
+.next/
+.turbo/
+
+# Test coverage
+coverage/
+.coverage
+htmlcov/
+
+# OS
+Thumbs.db
+desktop.ini
+
+# Claude Code local state
+.claude/settings.local.json
+
+# Inherited skills not used in this project (kept locally, untracked in repo)
+.claude/skills/sdp-runbook/
+
+# Tooling artifacts
+commit.txt
+pr-draft.md
