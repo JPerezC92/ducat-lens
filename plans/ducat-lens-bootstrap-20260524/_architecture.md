@@ -48,6 +48,8 @@
 
 **Out of scope for MVP:** GPU mode, batch processing, OCR fallback to EasyOCR.
 
+OCR confidence threshold = 0.5 (locked phase 08)
+
 ---
 
 ## Ducat data source
