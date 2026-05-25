@@ -1,0 +1,34 @@
+# plan.config.yaml — plan-enforce template conventions
+# Validates any plan that follows the plan-enforce _template.md + _phase-template.md
+# conventions. Drop at plans/_plan-config.yaml for project-wide enforcement, or at
+# plans/<task-slug>-YYYYMMDD/plan.config.yaml for a per-plan override.
+
+version: "1.0"
+
+plan_file: plan.md
+
+phase_files:
+  pattern: "phase-*.md"
+  number_extract_regex: '^phase-(\d+)-'
+
+required_headers:
+  - name: Status
+    type: enum
+    allowed: [active, completed, draft]
+  - name: Started
+    type: string
+  - name: Subject
+    type: string
+  - name: Layout
+    type: enum
+    allowed: ["single-file", "subfolder pattern"]
+
+required_sections:
+  - Owner
+  - Pre
+  - Reads
+  - Writes
+  - Steps
+  - Output
+  - Gate
+  - Abort conditions
