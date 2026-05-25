@@ -138,3 +138,111 @@ Ranked options 1 (Gemini) and 2 (EasyOCR) both have credible paths to ≥65% acc
 - [cisdem open-source OCR comparison](https://www.cisdem.com/resource/open-source-ocr.html) (accessed 2026-05-24)
 - [Tesseract custom font training](https://ironsoftware.com/csharp/ocr/how-to/ocr-custom-font-training/) (accessed 2026-05-24)
 - [OCR accuracy 2025 benchmark](https://sparkco.ai/blog/ocr-accuracy-comparison-2025-benchmark-analysis) (accessed 2026-05-24)
+
+---
+
+## PaddleOCR re-evaluation (2026-05-25)
+
+### PaddleOCR (PP-OCRv5, v3.5.0)
+
+**Accuracy on Warframe font:** Fact — PP-OCRv5 (server model) achieves a weighted-average recognition accuracy of 0.8401 across printed, vertical, handwritten, and traditional Chinese/English text, up from PP-OCRv4's 0.5735 — a 26.66 percentage-point gain. On the tildalice.io benchmark (10,000 real-world images, updated March 2026), PaddleOCR CER is 0.10, identical to the tildalice RapidOCR figure and slightly worse than EasyOCR's 0.09. In the codesota.com invoice test (April 2026), PaddleOCR scored 100% vs EasyOCR 62.5% and RapidOCR 75.0% on clean document text — but this was a structured invoice, not a stylized game UI font. Hypothesis: on Warframe's white-on-dark custom serif font, PaddleOCR PP-OCRv5 is expected to match or marginally exceed EasyOCR on clean cropped card regions, given its stronger multi-scenario training corpus and 13pp improvement over PP-OCRv4 on complex scenarios. What would confirm: a live test pass against `image.png` with PP-OCRv5 models.
+Sources: [PP-OCRv5 docs](http://www.paddleocr.ai/main/en/version3.x/algorithm/PP-OCRv5/PP-OCRv5.html) (accessed 2026-05-25); [tildalice.io benchmark](https://tildalice.io/ocr-tesseract-easyocr-paddleocr-benchmark/) (accessed 2026-05-25); [codesota.com best-for-python](https://www.codesota.com/ocr/best-for-python) (accessed 2026-05-25).
+
+**Install size:**
+- `paddleocr` wheel: 120.8 KB (PyPI, v3.5.0, released 2026-04-21). Fact.
+- `paddlepaddle` CPU wheel: 104.7–104.8 MB (Windows x86_64), 194.8 MB (Linux x86_64). Fact.
+- Total inferred environment (paddleocr + paddlepaddle CPU + transitive deps): Hypothesis — approximately 350–600 MB, based on paddlepaddle wheel size plus numpy/opencv/Pillow/requests transitive deps typically adding 100–250 MB. Comparison: EasyOCR total ~1–1.5 GB (PyTorch CPU), RapidOCR total ~25–80 MB (ONNX Runtime). What would confirm: `pip install paddleocr --dry-run` output with sizes.
+Sources: [paddleocr PyPI](https://pypi.org/project/paddleocr/) (accessed 2026-05-25); [paddlepaddle PyPI](https://pypi.org/project/paddlepaddle/#files) (accessed 2026-05-25); [codesota.com](https://www.codesota.com/ocr/best-for-python) (~500 MB claim, accessed 2026-05-25).
+
+**Offline-capable:** Yes. All models download once, run locally. CPU mode available; GPU optional (requires separate `paddlepaddle-gpu` wheel + CUDA version matching). Fact — same model-as-local-file architecture as EasyOCR/RapidOCR.
+Source: [PaddleOCR installation docs](https://github.com/PaddlePaddle/PaddleOCR/blob/main/docs/version3.x/installation.en.md) (accessed 2026-05-25).
+
+**License:** Apache 2.0. Fact — confirmed on GitHub main branch LICENSE file and Hugging Face model cards for PP-OCRv5 and PaddleOCR-VL as of 2026.
+Source: [PaddleOCR/LICENSE on GitHub](https://github.com/PaddlePaddle/PaddleOCR/blob/main/LICENSE) (accessed 2026-05-25).
+
+**Auth:** None. No API key, no signup, no external service per request. Fully self-contained after initial model download. Fact.
+
+**Latest version:** 3.5.0 (released 2026-04-21). Recommended install: `pip install paddleocr` which pulls PP-OCRv5 models. PaddlePaddle backend: 3.3.1 (released 2026-03-24). PaddleOCR 3.x requires PaddlePaddle 3.0+. Python 3.8–3.13 supported; Python 3.9+ required if using optional dependency groups. Fact.
+Sources: [paddleocr PyPI history](https://pypi.org/project/paddleocr/#history) (accessed 2026-05-25); [PaddleOCR GitHub releases](https://github.com/PaddlePaddle/PaddleOCR/releases) (accessed 2026-05-25).
+
+**Sample stub (10-line minimal):**
+```python
+from paddleocr import PaddleOCR
+
+ocr = PaddleOCR(use_angle_cls=True, lang="en")  # downloads models on first run
+result = ocr.ocr("image.png", cls=True)
+texts = [line[1][0] for block in result for line in block]
+print(texts)
+```
+
+**Warframe `image.png` characterization for PaddleOCR specifically:**
+The test image shows a dark-background Warframe Ducat Kiosk grid. The image as viewed contains: a dark navy/black UI background; multiple Prime part card tiles arranged in a 5-column grid; each card has a 3D-rendered icon in the upper portion and white mixed-case text (item name) in the lower portion; gold ornamental UI chrome borders each card. Text size is approximately 12–16px equivalent in the screenshot. Two difficulty factors for PaddleOCR specifically: (1) The ornamental gold card borders and 3D icon renders in the same frame may trigger PaddleOCR's layout analysis to detect non-text regions as text regions — PP-OCRv5's detector is trained on dense document layouts, not sparse game-UI grids. (2) The Warframe custom serif font is not in PaddleOCR's training corpus (trained on Chinese/English print and scene text). Countervailing factor: PaddleOCR handles white-on-dark text well as of PP-OCRv5 (vertical and scene text improvements). Net assessment: Hypothesis — PaddleOCR will perform comparably to EasyOCR on preprocessed (cropped, HSV-isolated) card-text strips; raw full-screenshot accuracy may suffer from spurious detections on UI chrome. This matches the prior-art pattern (WFinfo uses HSV crop before OCR regardless of engine). Evidence gap: no live test performed.
+
+**Pros:**
+- PP-OCRv5 is the most accurate free offline OCR engine by 2026 internal benchmarks (13pp over PP-OCRv4; 0.8401 weighted accuracy).
+- Smaller total footprint than EasyOCR (~500 MB vs ~1–1.5 GB).
+- Apache 2.0 license; no auth; no per-request external service.
+- Active development cadence (11 releases May 2025 – Apr 2026).
+- Supports Python 3.8–3.13; both Windows and Linux x86_64 have pre-built CPU wheels.
+- Built-in angle classification handles tilted/rotated text better than EasyOCR baseline.
+
+**Cons:**
+- PaddlePaddle is a non-standard ML framework — not PyTorch/ONNX. Adds a 105–195 MB framework wheel with no reuse if the project ever adds other ML features.
+- First-run model download still required (models not bundled in wheel).
+- PaddleOCR 3.x was restructured significantly from 2.x; community tutorials are split across versions; some Stack Overflow / Medium answers target 2.x API (now breaking).
+- Known install friction: Python 3.8 support is partial (doc-parser group requires 3.9+); GPU install requires CUDA version pinning; dependency conflict with LangChain 1.0.0 if `paddleocr[all]` is used.
+- Inference latency on CPU is the worst of the three: codesota measured 4.85s/image on Apple M-series vs RapidOCR 0.21s, EasyOCR 0.66s. Disqualifying for a backend serving a public web tool.
+- Windows LTSC / WSL2 users have reported missing pre-built wheel configurations (GitHub discussion #15960, 2025–2026).
+- Community is primarily Chinese-language; English documentation lags behind.
+
+**Sources (PaddleOCR section):**
+- [paddleocr PyPI v3.5.0](https://pypi.org/project/paddleocr/) (accessed 2026-05-25)
+- [paddlepaddle PyPI v3.3.1 files](https://pypi.org/project/paddlepaddle/#files) (accessed 2026-05-25)
+- [PaddleOCR GitHub releases](https://github.com/PaddlePaddle/PaddleOCR/releases) (accessed 2026-05-25)
+- [PP-OCRv5 introduction docs](http://www.paddleocr.ai/main/en/version3.x/algorithm/PP-OCRv5/PP-OCRv5.html) (accessed 2026-05-25)
+- [PP-OCRv5 arXiv paper](https://arxiv.org/abs/2603.24373) (accessed 2026-05-25)
+- [tildalice.io OCR benchmark (updated 2026-03-03)](https://tildalice.io/ocr-tesseract-easyocr-paddleocr-benchmark/) (accessed 2026-05-25)
+- [codesota.com best Python OCR 2026](https://www.codesota.com/ocr/best-for-python) (accessed 2026-05-25)
+- [PaddleOCR installation docs (v3.x)](https://github.com/PaddlePaddle/PaddleOCR/blob/main/docs/version3.x/installation.en.md) (accessed 2026-05-25)
+- [PaddleOCR/LICENSE on GitHub](https://github.com/PaddlePaddle/PaddleOCR/blob/main/LICENSE) (accessed 2026-05-25)
+- [PaddleOCR GitHub discussion #15960 (install issues)](https://github.com/PaddlePaddle/PaddleOCR/discussions/15960) (accessed 2026-05-25)
+- [PaddleOCR-VL license (Hugging Face)](https://huggingface.co/PaddlePaddle/PaddleOCR-VL/blob/main/LICENSE) (accessed 2026-05-25)
+
+---
+
+### Revised ranked table: PaddleOCR vs EasyOCR vs RapidOCR for ducat-lens
+
+| Dimension | PaddleOCR (PP-OCRv5 v3.5.0) | EasyOCR | RapidOCR (ONNX) |
+|---|---|---|---|
+| **Accuracy (CER, tildalice benchmark)** | 0.10 (Fact) | 0.09 (Fact) | ~0.10 (Hypothesis, same weights as Paddle) |
+| **Accuracy (structured docs, codesota)** | 100% (Fact) | 62.5% (Fact) | 75.0% (Fact) |
+| **PP-OCRv5 internal weighted accuracy** | 0.8401 (Fact) | N/A | N/A (Paddle ONNX weights, older gen) |
+| **Total install footprint** | ~350–600 MB (Hypothesis) | ~1–1.5 GB (Fact) | ~25–80 MB (Fact) |
+| **Inference speed (CPU, per image)** | ~4.85s (Fact, Apple M-series) | ~0.66s (Fact) | ~0.21s (Fact) |
+| **Offline** | Yes | Yes | Yes |
+| **License** | Apache 2.0 (Fact) | Apache 2.0 (Fact) | Apache 2.0 (Fact) |
+| **Auth / API key** | None | None | None |
+| **Windows CPU wheel** | Yes, 104.8 MB (Fact) | Yes (via PyTorch) | Yes, ONNX Runtime |
+| **Linux CPU wheel** | Yes, 194.8 MB (Fact) | Yes (via PyTorch) | Yes, ONNX Runtime |
+| **Install friction** | Moderate — PaddlePaddle non-standard framework, partial Python 3.8, CUDA pinning for GPU, LangChain conflict | Low | Low |
+| **Framework dependency** | PaddlePaddle (non-standard) | PyTorch (standard) | ONNX Runtime (standard) |
+| **Community / English docs** | Moderate (primarily Chinese-language) | Strong | Moderate |
+| **Active maintenance (2025–2026)** | Very active (11 releases in 12 months) | Active | Active |
+| **Spacing/word-boundary accuracy** | Good | Good | Known issues (community-reported) |
+| **Structured-text suitability** | Best (PP-OCRv5 multi-scenario corpus) | Good | Good |
+
+Sources: [tildalice.io](https://tildalice.io/ocr-tesseract-easyocr-paddleocr-benchmark/) (accessed 2026-05-25); [codesota.com](https://www.codesota.com/ocr/best-for-python) (accessed 2026-05-25); [paddlepaddle PyPI](https://pypi.org/project/paddlepaddle/#files) (accessed 2026-05-25); [paddleocr PyPI](https://pypi.org/project/paddleocr/) (accessed 2026-05-25).
+
+---
+
+### Final pick recommendation
+
+**Pick: RapidOCR**, with EasyOCR as the tested fallback; PaddleOCR deprioritized.
+
+PaddleOCR PP-OCRv5 is now demonstrably the most accurate free offline OCR engine by 2026 benchmarks. However, for ducat-lens specifically it is the wrong choice. The application is a stateless public web tool (FastAPI backend) that must return results quickly on a shared CPU server. PaddleOCR's CPU inference measured at ~4.85s per image — more than 20x slower than RapidOCR's 0.21s — is disqualifying for a per-request pipeline serving interactive web users. The heavier PaddlePaddle dependency (105–195 MB, non-standard framework outside Python web stacks) adds container/deployment complexity with no accuracy payoff over RapidOCR on this specific task: RapidOCR uses the same underlying PP-OCR model weights via ONNX, delivers comparable CER (0.10 vs 0.10), and installs in under 80 MB. EasyOCR remains ranked above PaddleOCR for ducat-lens — its PyTorch dependency is heavier (~1–1.5 GB), but PyTorch is a widely deployed framework, its latency at 0.66s is acceptable for web use, and it is the only engine of the three with documented superior accuracy on stylized/scene fonts (CER 0.09 vs 0.10). The revised ranking for ducat-lens is: (1) RapidOCR — lightest footprint, fastest inference, Apache 2.0, PaddleOCR-level accuracy via ONNX; (2) EasyOCR — best stylized-font accuracy, acceptable latency, higher footprint; (3) PaddleOCR — highest benchmark accuracy overall but worst CPU latency (~23x slower than RapidOCR), heavier non-standard framework, deprioritized for a web serving context.
+
+**Abort conditions for PaddleOCR:**
+- CPU inference latency ~4.85s/image on Apple M-series maps to 10–20s+ on shared cloud CPU. Alone, this aborts PaddleOCR for interactive web use.
+- Dependency conflict between `paddleocr[all]` and LangChain 1.0.0 is a real integration risk if the project later adds LLM features.
+- Windows LTSC / WSL2 users reported missing pre-built wheel configurations in GitHub discussion #15960 — not confirmed fully resolved.
+- None of the above abort conditions apply to RapidOCR or EasyOCR.

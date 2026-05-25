@@ -35,7 +35,7 @@ Three deliverables, in order:
 | **F — Audit gates** | Atrium 🏛️ / Bastion 🧱 / Crucible 🔥 | 10 |
 | **G — Consolidation (merger)** | Forge 🔨 + Cipher 🔓 | 11 |
 
-Phases 01 and 02 run in parallel (independent). Phase 03 depends on 01 output. Phases 04 and 05 run in parallel (both depend on the validator config schema written 2026-05-24 in `references/runbook-config-schema.md`). Phase 06 depends on 04 + 05 both passing. Phases 07–09 depend on 03 + 06. Phase 10 audits each Forge phase. No Herald phase yet — git init deferred until user confirms.
+Phases 01 and 02 run in parallel (independent). Phase 03 depends on 01 output. Phases 04 and 05 run in parallel (both depend on the validator config schema written 2026-05-24 in `references/runbook-config-schema.md`). Phase 06 depends on 04 + 05 both passing. Phases 07–09 depend on 03 + 06. Phase 10 audits each Forge phase + Inquisitor 🔎 (PR Reviewer) runs cross-file at the PR boundary. Herald 📯 (Release Manager) gates final PR — git initialized 2026-05-24 (PR #1 merged 2026-05-25); future Forge work ships via feature branch + PR per Herald spec.
 
 ### Phase index — dispatch table
 
@@ -50,8 +50,9 @@ Phases 01 and 02 run in parallel (independent). Phase 03 depends on 01 output. P
 | 07 | Scaffold repo: React+Vite frontend, FastAPI backend, ducat data bundle | Forge 🔨 | `phase-07-forge.md` | `frontend/` + `backend/` + `data/ducats.json` |
 | 08 | Backend pipeline: image upload → detect items → ducat lookup → recommend | Forge 🔨 | `phase-08-forge.md` | `backend/analyze.py` + `/analyze` endpoint working on `image.png` |
 | 09 | Frontend: upload UI + results table | Forge 🔨 | `phase-09-forge.md` | `frontend/src/App.tsx` etc., browser-tested upload flow |
-| 10 | Audit: Atrium (FE) + Bastion (BE) + Crucible (tests) | parallel | `phase-10-audit.md` | PASS/FAIL reports per agent |
+| 10 | Audit: Atrium (FE) + Bastion (BE) + Crucible (tests) + Inquisitor (cross-file pre-PR) | parallel | `phase-10-audit.md` | PASS/FAIL reports per agent + Inquisitor 🔎 gate signal |
 | 11 | Merger: collapse task-runbook into plan-enforce, strip incident concepts, dev-agnostic | Forge 🔨 + Cipher 🔓 | `phase-11-merger.md` | task-runbook skill deleted; validator renamed `validate_plan.py` + moved into plan-enforce/scripts/; plan-config-schema.md rewritten; example-config-plan.yaml; eval workspace archived under `plans/_archive/` |
+| 12 | Hire Inquisitor 🔎 (PR Reviewer) — side dispatch from phase 03 | Augur 🔮 → Marshal 🎖️ → Sentinel 🛡️ | `_brief-pr-reviewer.md` (no phase runbook — Augur brief used directly by Marshal) | `.claude/agents/inquisitor.md` + `agents/inquisitor/profile.md` + CLAUDE.md edits |
 
 ### Resolved decisions
 
@@ -73,34 +74,43 @@ Phases 01 and 02 run in parallel (independent). Phase 03 depends on 01 output. P
 - 2026-05-24 — Phase 02 Round 1 partial: Marshal 🎖️ cleaned 5 specs + 4 personas + CLAUDE.md (390 → 247 lines). Independent inline audit revealed Round 1 missed `L2 Lead` (Cipher role title) + `NestJS-TS` (framework refs) patterns because Cipher's pre-dispatch grep didn't include them. Round 2 dispatched with comprehensive patch list.
 - 2026-05-24 — Phase 02 Round 2 complete: 70+ `L2 Lead` → `Dev-Team Orchestrator` across atrium/crucible/herald/lumen/warden + their personas; bastion.md surgically reduced 236→131 lines (NestJS sections removed, Python-only rulebook retained); crucible.md NestJS refs replaced with framework-agnostic rules. Tooling milestone CLEAR.
 - 2026-05-24 — Tooling milestone declared. Next: dev work (phase 01 Augur output ready in `_research-vision.md` + `_research-ducat-api.md` from earlier completion; phase 03 architecture; phases 07-10 app build).
+- 2026-05-25 — Repo nuked + rebuilt PR-clean (user discovered AI co-author trailers on prior PR #1). New PR #1 merged with `chore/initial-scaffold` content. Agent-agnostic AI-attribution HARD RULE added to CLAUDE.md + git-commit + git-pr + Herald spec + Herald persona. Scrub plan untracked from repo (kept local). See archived plan `plans/scrub-ai-attribution-20260524/` (local-only).
+- 2026-05-25 — Augur 🔮 PaddleOCR re-evaluation completed. Verdict: RapidOCR remains pick (PaddleOCR's CPU latency 4.85s/image is disqualifying for interactive web; RapidOCR uses identical PP-OCR weights via ONNX at 0.21s).
+- 2026-05-25 — Phase 03 architecture lock SHIPPED. User decisions: vision=RapidOCR (always-free, no key), ducat source=WFCD/warframe-items JSON (build-time bundle), API contract=POST /analyze with multipart image upload returning {items, totals}. Full lock in `_architecture.md`.
+- 2026-05-25 — Inquisitor 🔎 (PR Reviewer) hired per Augur brief `_brief-pr-reviewer.md`. Owns: cross-file PR diff review, AI-attribution scan defense-in-depth, naming consistency, scope creep, dead code, public API alignment, dep hygiene. Bash allowlist scoped to `git diff main...HEAD` + `gh pr view/review/comment` (no merge/close/edit). Model: sonnet. Not auto-triggered per file edit — runs at PR boundary only.
 
 ## Source of truth chain
 
-For ducat values + item name resolution:
-1. Official Warframe API (`api.warframe.com` if exists)
-2. Warframe Community Developers — `api.warframestat.us`
-3. Warframe.market API (`api.warframe.market/v1`) — has `ducats` field per item
-4. Wiki scrape fallback (last resort)
+For ducat values + item name resolution (locked phase 03, 2026-05-25):
+1. **WFCD/warframe-items static JSON** (MIT) — primary, build-time bundled to `data/ducats.json`. Source: `https://raw.githubusercontent.com/WFCD/warframe-items/master/data/json/<Category>.json` for Warframes, Primary, Secondary, Melee, Companions.
+2. **warframe.market v1 API** — runtime fallback per item (only if WFCD lookup misses). Endpoint: `https://api.warframe.market/v1/items/{url_name}` with `Platform: pc` header.
+3. **Wiki scrape** — last resort (manual, not automated).
+4. ~~Official Warframe API~~ — discarded (does not exist).
+5. ~~api.warframestat.us~~ — discarded (sources from WFCD anyway, returned 403 during research).
 
-Final pick locked in phase 03 from Augur 🔮 brief.
+Full reasoning + raw evidence in `_research-ducat-api.md` and `_architecture.md`.
 
 ## Critical files / tools
 
 - `D:/projects/ducat-lens/CLAUDE.md` — rewrite target
 - `D:/projects/ducat-lens/.claude/agents/*.md` — 10 specs to audit
-- `D:/projects/ducat-lens/agents/*/` — persona profile dirs (most empty placeholders)
+- `D:/projects/ducat-lens/agents/*/` — persona CV files (all 12 roster members complete as of 2026-05-25)
 - `D:/projects/ducat-lens/image.png` — test fixture for phases 06 + 08
 - `D:/projects/ducat-lens/plans/_template.md` + `_phase-template.md` — written 2026-05-24
 - `D:/projects/ducat-lens/validate_runbook.py` — Belcorp validator, to be moved + refactored in phase 04
 - `D:/projects/ducat-lens/.claude/skills/task-runbook/references/` — schema docs + 2 example configs (written 2026-05-24)
-- `D:/projects/ducat-lens/.claude/skills/sdp-runbook/` — reference only, do not modify
+- `D:/projects/ducat-lens/.claude/skills/sdp-runbook/` — reference only, untracked locally per `.gitignore`
+- `D:/projects/ducat-lens/plans/ducat-lens-bootstrap-20260524/_architecture.md` — phase 03 architecture lock (written 2026-05-25)
+- `D:/projects/ducat-lens/plans/ducat-lens-bootstrap-20260524/_brief-pr-reviewer.md` — Augur 🔮 brief that drove Inquisitor 🔎 hire (2026-05-25)
+- `D:/projects/ducat-lens/.claude/agents/inquisitor.md` + `D:/projects/ducat-lens/agents/inquisitor/profile.md` — new agent post-hire (2026-05-25)
 - Skills: `plan-enforce`, `ui-ux-pro-max`, `impeccable`, `frontend-design`, `webapp-testing`, `verify`, `run`, `claude-api:skill-creator`
 
 ## Verification
 
 - ⬜ phase-01 — Augur returns `_research-vision.md` with ≥2 free vision options ranked + `_research-ducat-api.md` with confirmed ducat data source
 - ✅ phase-02 — `CLAUDE.md` rewritten end-to-end (246 lines, dev-only orchestrator); all 10 agent specs + 10 persona profiles audited and migrated; `L2 Lead` → `Dev-Team Orchestrator` (70+ replacements across 12 files in Round 2); NestJS-TS framework refs stripped from bastion.md (236→131 lines, Python-only) + crucible.md test rules; zero Belcorp/SDP/Activo/Quill/Ledger/Atlas/Ember/Ranger/Vault/Scribe/consulta-produccion/mongodb/bitacora/cf-kba hits (independent grep verified). Marshal 🎖️ Round 1 + Round 2 PASS. Sentinel 🛡️ formal re-audit deferred (session limit). Cipher 🔓 inline review PASS.
-- ⬜ phase-03 — `_architecture.md` locks: vision lib, ducat source, repo layout, npm/pip dep list
+- ✅ phase-03 — `_architecture.md` written 2026-05-25, locks: vision=RapidOCR (ONNX, always-free, no key), ducat source=WFCD/warframe-items JSON (build-time bundle), repo layout (frontend/+backend/+data/+scripts/), backend deps (fastapi+uvicorn+pillow+rapidocr-onnxruntime+httpx+pydantic), frontend deps (react18+vite+ts+react-dropzone), API contract (POST /analyze). User decisions locked inline.
+- ✅ phase-03-side — Inquisitor 🔎 (PR Reviewer) hired 2026-05-25. Augur brief `_brief-pr-reviewer.md` → Marshal wrote `.claude/agents/inquisitor.md` (206 lines) + `agents/inquisitor/profile.md` (54 lines); Sentinel audit PASS; CLAUDE.md updated (roster table, Cipher delegates, gate chain, Bash registry, workspace map).
 - ✅ phase-04 — (⚠️ superseded by phase 11) `validate_runbook.py` was refactored config-driven w/ 53 pytest cases. Now relocated + renamed under merger.
 - ✅ phase-05 — (⚠️ superseded by phase 11) task-runbook SKILL.md was drafted + Sentinel PASS. Skill deleted under merger.
 - ✅ phase-06 — (⚠️ superseded by phase 11) eval cycle ran iter-1 + iter-2; with_skill 100%, baseline 88.9%. Workspace archived.
@@ -122,5 +132,6 @@ Final pick locked in phase 03 from Augur 🔮 brief.
 
 ## Pending
 
-- [waiting for] User to confirm Augur 🔮 research output before phase 03 architecture lock
-- [blocked on] User decision on git init (Herald phase deferred until requested)
+- [waiting for] User approval to dispatch phase 07 — Forge 🔨 (Implementation Agent) scaffolds `frontend/` + `backend/` + `backend/scripts/fetch_ducats.py` + `data/ducats.json` per `_architecture.md` lock
+- [waiting for] Pre-Forge sync gate run (CLAUDE.md § "Pre-coding sync gate") before any Forge dispatch — verify branch in sync with `origin/main`
+- [decision needed] Backend dep format — `pyproject.toml` (modern, Poetry/uv-friendly) vs `requirements.txt` (simpler, pip-native). `_architecture.md` lists both; Cipher will pick at phase 07 dispatch unless user prefers
