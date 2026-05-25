@@ -208,6 +208,7 @@ All verifiers return `[PASS]` / `[FAIL]` / `[UNCERTAIN]`; Cipher 🔓 (Dev-Team 
 | Visual/UX | Lumen ✨ (Visual Director) | Changes touching visual surfaces | Herald 📯 (Release Manager) until Critical/High clear |
 | Dep/security | Warden 🔒 (Dependency Warden) | New dep, lockfile diff | Herald 📯 (Release Manager) until PASS/ADVISORY |
 | Cross-file PR review | Inquisitor 🔎 (PR Reviewer) | Pre-Herald PR creation OR user manual request | Herald 📯 (Release Manager) until PASS/ADVISORY |
+| Test-plan verification | Inquisitor 🔎 (PR Reviewer) | After Herald 📯 (Release Manager) returns PR URL — Cipher 🔓 (Dev-Team Orchestrator) dispatches Inquisitor 🔎 to tick all test-plan checkboxes via specialist dispatch | Cipher 🔓 (Dev-Team Orchestrator) does not mark PR ready until Inquisitor 🔎 returns PASS or BLOCK items are resolved |
 | Release | Herald 📯 (Release Manager) | All prior gates passed | User (sole merge authority) |
 
 ### Pre-coding sync gate
@@ -224,11 +225,12 @@ Before dispatching Forge 🔨 (Implementation Agent) to write or edit code, Ciph
 | Agent | Permitted commands |
 |---|---|
 | Herald 📯 (Release Manager) | git / gh operations |
-| Inquisitor 🔎 (PR Reviewer) | `git diff main...HEAD`, `git diff main...HEAD -- <file>`, `git log main...HEAD --oneline`, `gh pr view <number>`, `gh pr view <number> --json title,body,files,state`, `gh pr review <number> --comment --body "<body>"`, `gh pr comment <number> --body "<body>"` |
+| Inquisitor 🔎 (PR Reviewer) | `git diff main...HEAD`, `git diff main...HEAD -- <file>`, `git log main...HEAD --oneline`, `gh pr view <number>`, `gh pr view <number> --json title,body,files,state`, `gh pr view <number> --json body --jq .body`, `gh pr review <number> --comment --body "<body>"`, `gh pr comment <number> --body "<body>"`, `gh pr edit <number> --body-file <file>`, `gh pr edit <number> --body "<inline string>"` |
 | Lumen ✨ (Visual Director) | `pnpm dlx impeccable *`, `pnpm agent-browser *` |
 | Warden 🔒 (Dependency Warden) | `pnpm audit`, `pnpm outdated`, `pnpm list`, `pnpm info`, `node --version` |
-| Atrium 🏛️ (Frontend Architect) | `pnpm install` for production/build-tooling deps |
+| Atrium 🏛️ (Frontend Architect) | `pnpm install` for production/build-tooling deps; `pnpm build`; `pnpm dev` (both scoped to `frontend/`; dev server must be stopped after test-plan item completes) |
 | Crucible 🔥 (Test Architect) | `pnpm install` for test-runner deps |
+| Bastion 🧱 (Backend Architect) | `uv sync` (within `backend/`), `uv run pytest <args>` (within `backend/`), `uv run uvicorn <args>`, `uv run python -m backend.scripts.<script>`, `pkill -f uvicorn`, `curl -s -X POST -F <args> http://localhost:<port>/analyze` (smoke test only — no external curl) |
 
 > **Herald dispatch is non-negotiable:** Every git operation routes to Herald 📯 (Release Manager) immediately. Only pause for explicitly destructive ops (force push to main, hard reset, branch delete).
 
@@ -255,3 +257,4 @@ Applies to all implementing work dispatched to dev team agents. Full rules in `.
 - **Plan-first.** Invoke `plan-enforce` before dispatching Forge 🔨 (Implementation Agent) for any code-writing task.
 - **Dispatch context discipline.** When agent A's output feeds agent B's input, use `SendMessage` to continue A's context — do NOT spawn fresh `Agent` dispatch for B (loses state). When agents are independent, use parallel `Agent` calls in one assistant message.
 - **Single-call rule.** When invoking multiple independent agents, ALWAYS one assistant message with multiple `Agent` tool calls.
+- **Test-plan-verification gate.** After Herald 📯 (Release Manager) returns a PR URL, Cipher 🔓 MUST dispatch Inquisitor 🔎 (PR Reviewer) for test-plan verification before marking the PR ready. Cipher 🔓 does NOT manually tick test-plan checkboxes — Inquisitor 🔎 owns that surface and ticks via `gh pr edit --body-file` after specialist evidence is collected. Exception: empty test plan (Inquisitor 🔎 returns PASS immediately with a note).
