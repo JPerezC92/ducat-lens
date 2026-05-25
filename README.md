@@ -30,27 +30,28 @@ See `CLAUDE.md` for orchestration model + agent roster.
 
 ## Setup
 
-**Frontend** (Astro dev server on port 4321):
+**Prerequisites:**
+- Node 20+ with `pnpm` (frontend)
+- Python 3.11+ with `uv` (backend) — install uv via `pip install uv` or https://docs.astral.sh/uv/getting-started/installation/
+
+**Frontend (Astro dev server on port 4321):**
 ```
 cd frontend && pnpm install && pnpm dev
 ```
 
-**Frontend static build** (SEO crawlable HTML output to `frontend/dist/`):
+**Frontend static build (SEO crawlable HTML in `frontend/dist/`):**
 ```
 cd frontend && pnpm build
 ```
 
-**Backend** (FastAPI on port 8000):
+**Backend (install + run via uv):**
 ```
-cd backend && python -m venv .venv && source .venv/bin/activate && pip install -e .
-```
-
-**Ducat data bundle** (one-time fetch, re-run after Warframe updates):
-```
-python -m backend.scripts.fetch_ducats
+cd backend && uv sync                              # creates .venv + installs deps from pyproject.toml + uv.lock
+uv run python -m backend.scripts.fetch_ducats      # one-time ducat data fetch (re-run on Warframe updates)
+uv run uvicorn backend.main:app --reload --port 8000   # boots FastAPI on :8000
 ```
 
-**Run the backend server:**
+**Backend tests:**
 ```
-uvicorn backend.main:app --reload
+cd backend && uv run pytest tests/ -v
 ```

@@ -29,7 +29,7 @@
 | Sitemap | `@astrojs/sitemap` | latest | Auto-generated at build time |
 | Structured data | JSON-LD in landing page `<head>` | n/a | `WebApplication` schema for Google rich results |
 | Package manager (FE) | pnpm | latest | Plan-locked |
-| Package manager (BE) | pip | bundled | Standard Python |
+| Package manager (BE) | uv | latest | Modern Rust-based, 10-100× faster pip, manages venv + lockfile from pyproject.toml |
 
 ---
 

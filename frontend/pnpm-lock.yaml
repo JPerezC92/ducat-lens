@@ -9,32 +9,32 @@ importers:
   .:
     dependencies:
       '@astrojs/react':
-        specifier: latest
+        specifier: 5.0.5
         version: 5.0.5(@types/node@24.12.4)(@types/react-dom@18.3.7(@types/react@18.3.29))(@types/react@18.3.29)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@astrojs/sitemap':
-        specifier: latest
+        specifier: 3.7.2
         version: 3.7.2
       astro:
-        specifier: ^5
+        specifier: 5.18.1
         version: 5.18.1(@types/node@24.12.4)(rollup@4.60.4)(typescript@5.9.3)
       react:
-        specifier: ^18
+        specifier: 18.3.1
         version: 18.3.1
       react-dom:
-        specifier: ^18
+        specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       react-dropzone:
-        specifier: latest
+        specifier: 15.0.0
         version: 15.0.0(react@18.3.1)
     devDependencies:
       '@types/react':
-        specifier: ^18
+        specifier: 18.3.29
         version: 18.3.29
       '@types/react-dom':
-        specifier: ^18
+        specifier: 18.3.7
         version: 18.3.7(@types/react@18.3.29)
       typescript:
-        specifier: ^5
+        specifier: 5.9.3
         version: 5.9.3
 
 packages:
