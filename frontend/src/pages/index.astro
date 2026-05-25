@@ -13,6 +13,8 @@ const jsonLd = {
   description: pageDescription,
   applicationCategory: 'GameApplication',
   operatingSystem: 'Web',
+  image: new URL('/logo.svg', Astro.site ?? Astro.url).href,
+  logo: new URL('/logo.svg', Astro.site ?? Astro.url).href,
   offers: {
     '@type': 'Offer',
     price: '0',
@@ -22,17 +24,20 @@ const jsonLd = {
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription} jsonLd={jsonLd}>
-  <main class="max-w-3xl mx-auto px-6 py-8">
-    <h1 class="font-heading text-3xl md:text-4xl tracking-wide text-accent-blue">ducat-lens</h1>
+  <main class="max-w-3xl mx-auto px-6 py-8 space-y-8">
+    <div class="flex items-center gap-4">
+      <img src="/logo.svg" alt="ducat-lens logo" width="48" height="48" class="shrink-0" />
+      <h1 class="font-heading text-3xl md:text-4xl tracking-wide text-accent-blue">ducat-lens</h1>
+    </div>
 
-    <p class="text-text-muted">
+    <p class="text-base leading-relaxed text-text-muted">
       Upload your Warframe Ducat Kiosk screenshot and instantly see ducat values
       plus sell recommendations for every Prime part in your inventory. Free, no
       signup, no install.
     </p>
 
-    <h2 class="font-heading text-xl md:text-2xl tracking-wide text-text">How it works</h2>
-    <ol>
+    <h2 class="font-heading text-xl md:text-2xl tracking-wide text-text mt-10 mb-4">How it works</h2>
+    <ol class="list-decimal pl-6 space-y-2">
       <li>Upload a screenshot of your Warframe Ducat Kiosk inventory.</li>
       <li>AI detects every Prime part visible in the screenshot.</li>
       <li>
@@ -40,8 +45,8 @@ const jsonLd = {
       </li>
     </ol>
 
-    <h2 class="font-heading text-xl md:text-2xl tracking-wide text-text">Features</h2>
-    <ul>
+    <h2 class="font-heading text-xl md:text-2xl tracking-wide text-text mt-10 mb-4">Features</h2>
+    <ul class="list-disc pl-6 space-y-2">
       <li>Free and no signup required, works instantly in your browser.</li>
       <li>Offline-capable backend, no outbound calls at request time.</li>
       <li>
@@ -52,6 +57,8 @@ const jsonLd = {
       </li>
     </ul>
 
-    <DucatAnalyzer client:load />
+    <section class="mt-12">
+      <DucatAnalyzer client:load />
+    </section>
   </main>
 </BaseLayout>

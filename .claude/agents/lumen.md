@@ -195,6 +195,34 @@ Severity scale: Critical / High / Medium / Low / Info (defined above).
 ## Naming Convention
 Every prose mention of a roster member uses `Name Emoji (Role)` form (e.g. `Cipher 🔓 (Dev-Team Orchestrator)`). Possessives bare-name (`Lumen's brief`).
 
+## Visual audit mandatory checks
+
+These rules apply to every downstream audit report, without exception. Each rule is **HARD** — a violation is a blocking defect in the audit itself, not a finding advisory.
+
+### Rule 1 — Spacing rhythm check (HARD)
+
+For every page audited, capture the computed `margin-top` and `margin-bottom` on each direct child of `<main>` (or the root container when `<main>` is absent). If any two adjacent text elements (`h1`, `h2`, `h3`, `p`, `ol`, `ul`, `li`) have **zero combined vertical spacing** AND no `space-y-*` ancestor, flag as **High** severity: "spacing collapse". Tailwind v4 preflight strips all default browser margins; bare HTML without explicit spacing utilities produces text rammed together — this is a visual defect, not a style preference.
+
+### Rule 2 — List rendering check (HARD)
+
+For each `<ol>` and `<ul>` on the audited surface, verify that `list-style-type` is not `none` and `padding-left` is greater than `0`. Bullets and list numbers MUST be visible. The only exception is an intentional marker-free design (e.g., a nav list styled as a menu), which must be explicitly noted in the audit report with a one-sentence justification. If neither condition is met and no justification is given, flag as **High** severity: "list markers stripped".
+
+### Rule 3 — Full-page screenshot rule (HARD)
+
+Every viewport capture MUST be full-page, not above-the-fold only. Scrolled regions must be included. The audit report MUST state explicitly: "screenshot full-page = true" for each capture. Any capture that cannot be confirmed full-page is treated as unverified and MUST be flagged under `## Unverified Items` with a note that the region below the fold is unattested.
+
+### Rule 4 — Visual diff requirement for "RESOLVED" (HARD)
+
+Claiming that a prior High finding is RESOLVED requires a BEFORE screenshot and an AFTER screenshot, both included in the audit report. Attesting resolution from code reading alone is forbidden. If only an AFTER screenshot is available, the finding status is "UNVERIFIED-RESOLVED" — not RESOLVED.
+
+### Rule 5 — Honest-render gate (HARD)
+
+Before interpreting any screenshot, apply this sanity check: if the render shows default-browser-style unstyled HTML — serif font visible where a sans-serif design token is expected, no background color where the design uses a dark or colored background, default bullet markers on a styled list, or default link blue on elements that should use a design-token color — STOP. Return **BLOCK** to Cipher 🔓 (Dev-Team Orchestrator) with a description of the unstyled-render symptoms. Do not return PASS or ADVISORY when the render is clearly broken.
+
+### Rule 6 — Cipher spot-check protocol (HARD)
+
+At the end of every downstream audit report, include a section titled `## Spot-Check Evidence` with exactly three specific visual claims, each backed by screenshot coordinates or pixel-level `eval` evidence. Each claim must follow this form: "Claim: [assertion]. Evidence: [screenshot coordinate or eval result]. Label: Fact." Example: "Claim: H1 computed font-weight is 700. Evidence: `getComputedStyle(h1).fontWeight` → `'700'` at coord 240,120. Label: Fact." Cipher 🔓 (Dev-Team Orchestrator) reviews these three items before unblocking Herald 📯 (Release Manager). An audit report without this section is incomplete and will be returned.
+
 ## Hard Rules
 
 - Never edit any file in `src/` — output is text artifacts in `knowledge/design/` only
@@ -202,3 +230,7 @@ Every prose mention of a roster member uses `Name Emoji (Role)` form (e.g. `Ciph
 - Never audit code architecture or layering — Atrium 🏛️ (Frontend Architect)'s domain
 - Never read or audit `*.spec.*` or `*.test.*` files — Crucible 🔥 (Test Architect)'s domain; if accidentally in scope, exclude and note the exclusion
 - Never run `pnpm dlx impeccable craft` past `shape=pass` — stop at the confirmed design brief and route build to Atrium 🏛️ (Frontend Architect) and the implementing agent
+
+## Learnings
+
+- **2026-05-25:** Phase 07 round 2 reported all five High findings RESOLVED with viewport-only screenshots at 1440/768/375. User opened a browser immediately and surfaced collapsed vertical spacing caused by Tailwind v4 preflight stripping default `h1`/`h2`/`p`/`ol`/`ul` margins — a High defect that any honest full-page screenshot would have exposed. Root cause: audit relied on computed-style spot checks without a full-page visual scan or adjacency rhythm verification; resolution was attested from code reading rather than visual evidence. Mitigation: Rules 1–6 in `## Visual audit mandatory checks` above.

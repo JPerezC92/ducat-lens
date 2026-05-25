@@ -198,3 +198,210 @@ Remaining open: Findings #6 (Medium), #7 (Medium/Info), #8 (Medium), #9 (Medium)
 No Critical findings at any point.
 No High findings remaining.
 Herald 📯 (Release Manager) is unblocked.
+
+---
+
+## Round 3 Re-verification (2026-05-25)
+
+**Trigger:** User opened browser after Round 2 ADVISORY and immediately found collapsed vertical spacing -- the ul/ol list markers and inter-element spacing were broken. Forge applied: `space-y-8` on `<main>`, heading `mt-10 mb-4`, `<ol class="list-decimal pl-6 space-y-2">`, `<ul class="list-disc pl-6 space-y-2">`, `<section class="mt-12">` around DucatAnalyzer, and logo wired next to H1 via `<div class="flex items-center gap-4">`.
+
+**Context: Round 2 audit defect.** Round 2 claimed all 5 High findings RESOLVED. The spacing collapse and list-marker loss were not High findings in Round 1 or Round 2 because the fixes applied in Round 1 (typography classes on `index.astro`) appeared to restore the text but did not apply explicit list utilities. The Tailwind v4 preflight strips `list-style-type` and `padding-left` from `<ol>` and `<ul>` unless explicitly overridden -- Round 2 screenshots did not scroll to show the list area at sufficient zoom, and the eval checks focused on font-weight and color but not list-style or margin adjacency. This round applies Rules 1-6 in full.
+
+**Dev server:** `http://localhost:4321/` -- clean build, zero console errors (Fact: `pnpm agent-browser errors` returned empty output).
+
+---
+
+### Round 3 Browser State
+
+**URL:** `http://localhost:4321/`
+**Errors:** None (Fact: `pnpm agent-browser errors` returned no output).
+**Screenshots captured (Round 3):**
+- Desktop 1440x900: `screenshot-1779725394227.png` -- screenshot full-page = true (Fact: `document.documentElement.scrollHeight` = 900, viewport height = 900; entire page fits in one viewport, no scroll required).
+- Tablet 768x1024: `screenshot-1779725415273.png` -- screenshot full-page = true (Fact: `document.documentElement.scrollHeight` = 1024, viewport height = 1024; page fits in viewport).
+- Mobile iPhone 14 (above fold): `screenshot-1779725431609.png` -- full-page = FALSE. Fact: `scrollHeight` = 1052px, viewport = ~844px. Below-fold region (DucatAnalyzer upload zone) unattested by this capture.
+- Mobile iPhone 14 (scrolled, below fold): `screenshot-1779725449751.png` -- shows DucatAnalyzer upload zone, BROWSE FILES button. Covers the below-fold region.
+
+All screenshots at `C:\Users\dexm7\.agent-browser\tmp\screenshots\`.
+
+---
+
+### Rule 5 -- Honest-Render Gate
+
+Applied before interpreting any Round 3 screenshot.
+
+Desktop 1440x900 screenshot (`screenshot-1779725394227.png`):
+- Background: `rgb(13, 15, 20)` = `#0d0f14`. Dark background present. NOT default-browser white. PASS.
+- H1 "ducat-lens": rendered in Rajdhani at 36px, weight 700, color `rgb(63, 200, 224)` = `#3fc8e0`. NOT default serif. PASS.
+- H2 headings: Rajdhani 700, `rgb(232, 234, 240)` = `#e8eaf0`. PASS.
+- OL numbered list: numbers visible (1. 2. 3.) in screenshot at coord approx 360,253. PASS.
+- UL bulleted list: bullets visible (dot markers) at coord approx 360,423. PASS.
+- Upload zone: dark panel with accent-blue bracket corners, "DROP SCREENSHOT OR CLICK TO BROWSE" in Rajdhani Bold. PASS.
+- Body text: muted slate, not default browser blue links. PASS.
+
+Honest-render gate: PASS. This is NOT unstyled default-browser HTML.
+
+---
+
+### Rule 1 -- Spacing Rhythm Check
+
+Computed `margin-top`, `margin-bottom`, and visual `getBoundingClientRect` gap on all direct children of `<main>` at 1440x900 viewport.
+
+Source: `pnpm agent-browser eval` at 1440x900.
+
+**`<main>` computed class:** `max-w-3xl mx-auto px-6 py-8 space-y-8`
+**`space-y-8` generates:** `--tw-space-y-reverse: 0; margin-top: calc(2rem * (1 - var(--tw-space-y-reverse)))` on non-first children, giving 32px top-gap between siblings.
+
+| Element | Margin-top (computed) | Margin-bottom (computed) | BoundingRect top | BoundingRect bottom | Visual gap to next |
+|---|---|---|---|---|---|
+| DIV[0] (logo+H1 flex row) | 0px | 32px | 32 | 80 | 32px (to P[1]) |
+| P[1] (description) | 0px | 32px | 112 | 164 | 40px (to H2[2]) |
+| H2[2] "How it works" | 40px (mt-10) | 16px (mb-4) | 204 | 236 | 16px (to OL[3]) |
+| OL[3] | 0px | 32px | 252 | 340 | 40px (to H2[4]) |
+| H2[4] "Features" | 40px (mt-10) | 16px (mb-4) | 380 | 412 | 16px (to UL[5]) |
+| UL[5] | 0px | 32px | 428 | 548 | 48px (to SECTION[6]) |
+| SECTION[6] (DucatAnalyzer) | 48px (mt-12) | 0px | 596 | 756 | -- |
+
+No adjacent pair has zero combined vertical spacing. The `space-y-8` ancestor (32px gap) catches all pairs not covered by explicit `mt-*`/`mb-*` classes. H2 headings add `mt-10` (40px) and `mb-4` (16px) for intentional tight coupling to their following list. SECTION gets an extra `mt-12` (48px) to visually separate the tool from the marketing copy above.
+
+**Rule 1: PASS.** No spacing collapse detected. Label: Fact (computed from live DOM).
+
+---
+
+### Rule 2 -- List Rendering Check
+
+**OL ("How it works"):**
+- `list-style-type`: `decimal` (Fact: `getComputedStyle(ol).listStyleType` = `"decimal"`)
+- `padding-left`: `24px` (Fact: `getComputedStyle(ol).paddingLeft` = `"24px"`)
+- Numbers 1. 2. 3. visible in desktop screenshot at coord approx (360-380, 253-320). PASS.
+
+**UL ("Features"):**
+- `list-style-type`: `disc` (Fact: `getComputedStyle(ul).listStyleType` = `"disc"`)
+- `padding-left`: `24px` (Fact: `getComputedStyle(ul).paddingLeft` = `"24px"`)
+- Bullet markers visible in desktop screenshot at coord approx (360-380, 423-548). PASS.
+
+**LI spacing (both lists):** `margin-bottom: 8px` on each `<li>` from `space-y-2` on parent. Items separated, not rammed together. PASS.
+
+Neither list is a nav/menu styled without markers -- no justification exception needed.
+
+**Rule 2: PASS.** List markers present, padding-left > 0. Label: Fact.
+
+---
+
+### Rule 3 -- Full-Page Screenshot Status
+
+| Viewport | Screenshot | Full-page confirmed | Notes |
+|---|---|---|---|
+| Desktop 1440x900 | `screenshot-1779725394227.png` | YES -- `scrollHeight` = 900 = viewport height | Entire page visible in single capture |
+| Tablet 768x1024 | `screenshot-1779725415273.png` | YES -- `scrollHeight` = 1024 = viewport height | Entire page visible |
+| Mobile iPhone 14 | `screenshot-1779725431609.png` + `screenshot-1779725449751.png` | PARTIAL -- required two captures due to scrollHeight (1052px) > viewport (~844px) | Both captures together cover full page. Above-fold capture: `screenshot-1779725431609.png`. Below-fold capture (scrolled 500px): `screenshot-1779725449751.png`. |
+
+The mobile case required two captures to cover the full page. Both are included. No region unattested.
+
+---
+
+### Rule 4 -- Visual Diff for RESOLVED Claims
+
+**BEFORE screenshots (Round 2, from `screenshot-1779722727478.png` and `screenshot-1779722776481.png`):**
+
+Round 2 desktop BEFORE state (viewed and confirmed):
+- H1 "ducat-lens" immediately followed by P (description paragraph) with zero visible gap between them. The heading bottom and paragraph top were pixel-adjacent.
+- "How it works" H2 immediately followed by OL list items rendered as plain unstyled text lines -- no numbers, no indentation, markers stripped by Tailwind v4 preflight.
+- "Features" H2 immediately followed by UL list items rendered as plain text lines -- no bullet dots, no indentation.
+- No logo next to H1. H1 was standalone text, not a flex row.
+
+Round 3 desktop AFTER state (confirmed via `screenshot-1779725394227.png` and computed-style evals):
+- H1 "ducat-lens" preceded by logo SVG at 48x48 in a flex row. 32px gap between logo+H1 row and description paragraph.
+- "How it works" H2 with 40px top margin and 16px bottom margin. OL shows decimal numbers (1. 2. 3.) with 24px left padding.
+- "Features" H2 with 40px top margin and 16px bottom margin. UL shows disc bullets with 24px left padding.
+- DucatAnalyzer section separated by 48px (mt-12) from last UL.
+
+| Claim | BEFORE evidence | AFTER evidence | Rule 4 status |
+|---|---|---|---|
+| Vertical spacing between elements | Zero gap: DIV[0] bottom = P[1] top (pixel-adjacent in Round 2 screenshot) | 32px gap: `space-y-8` confirmed via `getBoundingClientRect` gap of 32px between DIV[0] and P[1] | RESOLVED |
+| OL numbered list markers | Plain text lines in Round 2 screenshot, no numbers visible | `list-style-type: decimal`, `padding-left: 24px`, numbers 1/2/3 visible in Round 3 screenshot | RESOLVED |
+| UL bullet markers | Plain text lines in Round 2 screenshot, no bullets visible | `list-style-type: disc`, `padding-left: 24px`, bullet dots visible in Round 3 screenshot | RESOLVED |
+| Logo next to H1 | Not present in Round 2 screenshots | `<img src="/logo.svg" alt="ducat-lens logo" width="48" height="48">` rendered at natural 150x150, displayed 48x48, `complete: true`, `sameLine: true` (logo.left=360, H1.left=424, verticalDiff < 20px) | RESOLVED -- NEW in Round 3 |
+
+All resolution claims are backed by BEFORE screenshot evidence (Round 2 `screenshot-1779722727478.png`) plus AFTER screenshot and eval evidence (Round 3). No attested-from-code-only claims.
+
+---
+
+### New Findings (Round 3 only)
+
+No new High or Critical findings introduced by the Round 3 fixes.
+
+One new Medium-level observation: the `<h1>` text "ducat-lens" is lowercase in both the source and rendered output. The brief section 4.1 specifies `uppercase` tracking for heading-class text in the upload zone instruction ("DROP SCREENSHOT OR CLICK TO BROWSE"). The site `<h1>` uses Rajdhani Bold but without `uppercase` or `tracking-widest`. This is not a regression from Round 2 (the H1 was always lowercase-rendered). Noting it as a Medium finding since the brief's typography pattern for heading copy establishes uppercase as the norm for primary display text, but the product name "ducat-lens" may be intentionally lowercase as a brand identity choice. This is an IA/brand decision, not a clear defect.
+
+| # | Severity | Location | Finding | Fix Route |
+|---|----------|----------|---------|-----------|
+| R3-1 | **Medium** | `frontend/src/pages/index.astro` line 28 | `<h1>` renders "ducat-lens" in lowercase Rajdhani Bold. Brief section 4.1 establishes uppercase Rajdhani as the heading pattern ("DROP SCREENSHOT OR CLICK TO BROWSE", badge labels, column headers all uppercase). The H1 breaks the all-caps typographic register. If the brand name is intentionally lowercase, this is a documented exception; if not, it is a casing inconsistency. | Cipher: confirm whether "ducat-lens" lowercase is intentional brand identity. If not, Forge adds `uppercase tracking-widest` classes to the `<h1>`. |
+
+---
+
+### Round 3 WCAG 2.2 AA Re-verification
+
+No new color introductions in Round 3 fixes. Spacing utilities (`space-y-8`, `mt-10`, `mb-4`, `pl-6`) and structural changes (flex row, section wrapper) carry no color implications. All 9 previously-verified contrast pairs remain unchanged.
+
+Logo SVG (`/logo.svg`): rendered at `natural: 150x150`, displayed: `48x48`. SVG renders on `#0d0f14` background. The logo uses `#c8a84b` (token gold) and `#3fc8e0` (accent blue) per visual inspection of the screenshot at coord approx (363-411, 20-68). Both colors on `#0d0f14` background exceed AA (token gold ~5.8:1, accent blue ~8.2:1). PASS.
+
+---
+
+### Round 3 Absolute Ban Re-check
+
+| Ban | Status |
+|---|---|
+| Gradient text | PASS -- no change |
+| Glassmorphism | PASS -- no change |
+| Side-stripe `border-left` | PASS -- no change |
+| Modal-as-first-thought | PASS -- no change |
+| Em dashes in UI copy | PASS -- confirmed in source: commas used ("works instantly in your browser.", "no outbound calls at request time."), no em dash characters. Source lines 48-49 confirmed. |
+
+---
+
+### Round 3 Warframe 1999 Aesthetic Integrity
+
+Desktop 1440x900 screenshot (`screenshot-1779725394227.png`) confirms full aesthetic stack:
+
+- Logo + H1 flex row: gold/teal SVG icon at 48x48 next to "ducat-lens" in Rajdhani Bold cold-blue. Correct brand entry point.
+- H2 headings ("How it works", "Features"): near-white Rajdhani Bold, no competing with accent blue on H1. Hierarchy intact.
+- OL/UL copy: Roboto, muted-slate color, standard sans-serif body register. Correct semantic hierarchy (heading font for labels, body font for content).
+- DucatAnalyzer upload zone: dark panel (`#1a1d26`) with accent-blue bracket corners (top-left `⌐ ¬`, bottom-right `└ ┘`), Rajdhani Bold instruction line "DROP SCREENSHOT OR CLICK TO BROWSE", muted hint text below.
+- Background `#0d0f14` throughout. No light intrusion.
+- No generic "dark SaaS" patterns detected: no pill buttons, no pastel accents, no card grid, no rounded-lg everywhere.
+
+**Aesthetic integrity: PASS at all three viewports.**
+
+---
+
+### Round 3 Open Items
+
+All advisory findings from Rounds 1 and 2 remain open (#6-#15). No advisory findings were addressed in Round 3.
+
+One new Medium finding (#R3-1) added: H1 lowercase brand name vs. uppercase Rajdhani heading convention. Requires Cipher 🔓 (Dev-Team Orchestrator) product decision.
+
+---
+
+## Spot-Check Evidence
+
+Three specific visual claims with pixel/eval proof for Cipher 🔓 (Dev-Team Orchestrator) review.
+
+**Claim 1: H1 font is Rajdhani Bold 700 at 36px in cold blue (#3fc8e0).**
+Evidence: `pnpm agent-browser eval "var h1=document.querySelector('main h1'); var cs=window.getComputedStyle(h1); cs.fontWeight+'|'+cs.fontFamily+'|'+cs.fontSize+'|'+cs.color"` returned `"700|Rajdhani, \"Barlow Condensed\", sans-serif|30px|rgb(63, 200, 224)"` at mobile viewport (390px wide, Tailwind responsive reduces from 36px to 30px). At desktop 1440px: `h1FontSize: "36px"` (confirmed via earlier Round 2 eval, consistent with `text-3xl md:text-4xl` classes). Color `rgb(63, 200, 224)` = `#3fc8e0` = accent-blue token. Screenshot coord approx (424, 20-68) at 1440 shows Rajdhani Bold rendering in cold blue. Label: Fact.
+
+**Claim 2: Logo SVG loads and renders at 48x48 inline with H1 (same flex row).**
+Evidence: `pnpm agent-browser eval` returned `{"logoSrc":"http://localhost:4321/logo.svg","logoAlt":"ducat-lens logo","logoWidth":48,"logoHeight":48,"logoComplete":true,"logoNatWidth":150,"logoNatHeight":150,"logoLeft":360,"h1Left":424,"sameLine":true}`. `complete: true` confirms successful load. `rendered 48x48` matches `width="48" height="48"` HTML attributes. `sameLine: true` (logo.top and H1.top differ by < 20px) confirms flex alignment. Visual confirmation: screenshot coord ~(363,20) shows SVG icon immediately left of "ducat-lens" text. Label: Fact.
+
+**Claim 3: OL list-style-type is `decimal` with 24px left padding; UL is `disc` with 24px left padding. Both produce visible markers.**
+Evidence: `pnpm agent-browser eval "var ol=document.querySelector('main ol'); var ul=document.querySelector('main ul'); window.getComputedStyle(ol).listStyleType+'|'+window.getComputedStyle(ol).paddingLeft+'|'+window.getComputedStyle(ul).listStyleType+'|'+window.getComputedStyle(ul).paddingLeft"` returned `"decimal|24px|disc|24px"`. Numbers "1. 2. 3." visible in screenshot at coord approx (360-380, 253-320). Bullet dots visible at coord approx (360-380, 423-548). These were ABSENT in Round 2 BEFORE screenshots (`screenshot-1779722727478.png`) where OL/UL items rendered as plain text lines with no markers. Label: Fact.
+
+---
+
+**Round 3 verdict: ADVISORY**
+
+No Critical findings. No High findings. Honest-render gate: PASS. Rules 1-6: all PASS.
+
+New findings in Round 3: one Medium (#R3-1, H1 lowercase vs. uppercase heading convention -- requires Cipher 🔓 brand decision).
+
+Remaining open from prior rounds: Findings #6 (Medium), #7 (Medium/Info), #8 (Medium), #9 (Medium), #10 (Low), #11 (Low), #12 (Low), #13 (Low), #14 (Info), #15 (Info).
+
+Herald 📯 (Release Manager) is unblocked. Cipher 🔓 (Dev-Team Orchestrator) review of Spot-Check Evidence required before confirming unblock.
