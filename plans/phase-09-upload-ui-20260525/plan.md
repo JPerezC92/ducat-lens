@@ -1,6 +1,7 @@
 ---
-Status: active
+Status: completed
 Started: 2026-05-25 17:00
+Completed: 2026-05-25 22:30
 Subject: Phase 09; frontend upload UI + results table + sell/keep recommendations (Warframe 1999 aesthetic)
 Layout: subfolder pattern
 ---
@@ -91,8 +92,8 @@ Layout: subfolder pattern
 - ✅ Phase 06: `pnpm build` exit 0; `pnpm tsc --noEmit` exit 0; `dist/index.html` carries `application/ld+json` + `canonical` + `<h1` (round 2 after Forge fixes)
 - ✅ Phase 07: Lumen ✨ (Visual Director) round 2 ADVISORY (zero Critical/High after Forge fixes; 5 prior High RESOLVED; WCAG 2.2 AA contrast PASS on 9 pairs)
 - ✅ Phase 08: Warden 🔒 (Dependency Warden) PASS (`pnpm audit` 0 vulns / 785 deps; tanstack pin matches; MIT clean; no postinstall scripts)
-- ⬜ Phase 09: PR opened; only frontend/ files changed; no AI attribution anywhere
-- ⬜ Phase 10: all PR test-plan checkboxes `[x]`; Inquisitor 🔎 (PR Reviewer) PASS
+- ✅ Phase 09: PR #9 opened (`feat/frontend/phase-09-upload-ui`); commits `b89b00e` + `9302bf6`; zero AI attribution
+- ✅ Phase 10: Inquisitor 🔎 (PR Reviewer) PASS; 14/14 test-plan boxes ticked with Fact-level evidence; zero violations on cross-cutting checks
 
 ## Out of scope
 

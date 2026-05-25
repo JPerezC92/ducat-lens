@@ -1,9 +1,9 @@
 # Research Brief — Inquisitor Test-Plan Verification Ownership
 
 **Date:** 2026-05-25
-**Prepared by:** Augur (Senior Research Analyst)
-**Requested by:** Cipher (Dev-Team Orchestrator)
-**Consumer:** Marshal (HR Director) — for spec and CLAUDE.md edits
+**Prepared by:** Augur 🔮 (Senior Research Analyst)
+**Requested by:** Cipher 🔓 (Dev-Team Orchestrator)
+**Consumer:** Marshal 🎖️ (HR Director) — for spec and CLAUDE.md edits
 **Decision locked:** Inquisitor owns test plan verification post-PR-open (Model B: coordinator + specialist dispatch)
 
 ---
@@ -42,25 +42,25 @@ Map every test-plan command family observed across PRs #1–#5 to an existing ag
 
 | # | Command family | Observed in PR(s) | Current owner | Grant evidence (CLAUDE.md line) |
 |---|---------------|------------------|---------------|----------------------------------|
-| A | `pnpm install` | #3, #4, #5 | Atrium (Frontend Architect) [production deps] / Crucible (Test Architect) [test deps] | Line 231 (Atrium), Line 232 (Crucible) |
-| B | `pnpm audit` | #5 | Warden (Dependency Warden) | Line 229 |
-| C | `pnpm agent-browser *` | #5 | Lumen (Visual Director) | Line 230 |
-| D | `pnpm build` | #3 | **NO OWNER — gap** | Not in grant registry |
+| A | `pnpm install` | #3, #4, #5 | Atrium 🏛️ (Frontend Architect) [production deps] / Crucible 🔥 (Test Architect) [test deps] | Line 231 (Atrium), Line 232 (Crucible) |
+| B | `pnpm audit` | #5 | Warden 🔒 (Dependency Warden) | Line 229 |
+| C | `pnpm agent-browser *` | #5 | Lumen ✨ (Visual Director) | Line 230 |
+| D | `pnpm build` | #3 | **NO OWNER — gap** | Not in grant registry (proposed: Atrium 🏛️) |
 | E | `pnpm dev` | #3 | **NO OWNER — gap** | Not in grant registry |
 | F | `uv sync` | #4 | **NO OWNER — gap** | Not in grant registry |
 | G | `uv run pytest tests/ -v` | #4 | **NO OWNER — gap** | Not in grant registry |
 | H | `uv run uvicorn backend.main:app` + `curl` smoke | #4 | **NO OWNER — gap** | Not in grant registry |
 | I | `uv run python -m backend.scripts.fetch_ducats` | #3, #4 | **NO OWNER — gap** | Not in grant registry |
-| J | Static file existence/content check (`data/ducats.json` keys, size) | #3 | Inquisitor (PR Reviewer) [file read tools] | Inquisitor has Read, Glob, Grep — no Bash needed |
-| K | JSON-LD / SEO meta presence check on built HTML | #3 | Inquisitor (PR Reviewer) [file read tools] | Inquisitor has Read, Grep — scans `frontend/dist/index.html` after build |
-| L | Version-pin verification (`package.json`, `pyproject.toml` — no `^`/`~`/`>=`) | #4 | Inquisitor (PR Reviewer) [file read tools] | Read + Grep against `frontend/package.json`, `backend/pyproject.toml` |
+| J | Static file existence/content check (`data/ducats.json` keys, size) | #3 | Inquisitor 🔎 (PR Reviewer) [file read tools] | Inquisitor has Read, Glob, Grep — no Bash needed |
+| K | JSON-LD / SEO meta presence check on built HTML | #3 | Inquisitor 🔎 (PR Reviewer) [file read tools] | Inquisitor has Read, Grep — scans `frontend/dist/index.html` after build |
+| L | Version-pin verification (`package.json`, `pyproject.toml` — no `^`/`~`/`>=`) | #4 | Inquisitor 🔎 (PR Reviewer) [file read tools] | Read + Grep against `frontend/package.json`, `backend/pyproject.toml` |
 | M | Python smoke-test: `python .claude/skills/plan-enforce/scripts/test_validate_plan.py` | #1 | **NO OWNER — gap** (one-off script) | Not in grant registry |
 
 ### Disambiguation notes (fact)
 
-- **`pnpm install`** (item A): Atrium owns production + build-tooling deps; Crucible owns test-runner deps. For test-plan verification the command is always `pnpm install` with no new packages (lockfile already committed) — it is a "confirm lockfile is in sync" check. Either agent can execute it. Atrium is the natural coordinator because it owns more of the dep surface; dispatch to Atrium unless the context explicitly names test-only packages.
-- **Static / file checks** (items J, K, L): these require only Read and Grep, which Inquisitor already holds. No new Bash grant is required. Inquisitor executes these itself without dispatching to a specialist.
-- **`python .claude/skills/plan-enforce/scripts/test_validate_plan.py`** (item M): one-time PR #1 item. No ongoing pattern. Not a recurring command family. Gap noted but no grant assignment proposed for it — file it as an anomaly; Forge's existing Bash grant (linter/formatter autofix scope) does not cover arbitrary Python scripts.
+- **`pnpm install`** (item A): Atrium 🏛️ (Frontend Architect) owns production + build-tooling deps; Crucible 🔥 (Test Architect) owns test-runner deps. For test-plan verification the command is always `pnpm install` with no new packages (lockfile already committed) — it is a "confirm lockfile is in sync" check. Either agent can execute it. Atrium is the natural coordinator because it owns more of the dep surface; dispatch to Atrium unless the context explicitly names test-only packages.
+- **Static / file checks** (items J, K, L): these require only Read and Grep, which Inquisitor 🔎 (PR Reviewer) already holds. No new Bash grant is required. Inquisitor executes these itself without dispatching to a specialist.
+- **`python .claude/skills/plan-enforce/scripts/test_validate_plan.py`** (item M): one-time PR #1 item. No ongoing pattern. Not a recurring command family. Gap noted but no grant assignment proposed for it — file it as an anomaly; Forge 🔨 (Implementation Agent)'s existing Bash grant (linter/formatter autofix scope) does not cover arbitrary Python scripts.
 
 ---
 
@@ -70,16 +70,16 @@ Map every test-plan command family observed across PRs #1–#5 to an existing ag
 
 | Gap | Command family | Proposed owner | Justification |
 |-----|---------------|----------------|---------------|
-| G1 | `pnpm build` | Atrium (Frontend Architect) | Atrium owns build-tooling deps and frontend build output. `pnpm build` is a frontend build command — same family as `pnpm install` for build tooling. Atrium already uses Read/Glob/Grep to verify frontend artifacts; adding `pnpm build` keeps the command family cohesive. |
-| G2 | `pnpm dev` | Atrium (Frontend Architect) | `pnpm dev` starts the Vite/Astro dev server — a frontend build-tooling operation. Same ownership rationale as G1. Scope: start server for smoke test only; Atrium does not own the running server lifecycle beyond the test step. |
-| G3 | `uv sync` | Bastion (Backend Architect) | Bastion owns backend Python files. `uv sync` installs the backend's locked dep tree — the backend-side analogue of `pnpm install`. Bastion currently has no Bash grant (spec: `tools: Read, Glob, Grep`); adding `uv sync` is a minimal single-family extension. |
-| G4 | `uv run pytest tests/ -v` | Bastion (Backend Architect) | Running the Python test suite is backend verification work — Bastion's domain. Single family with G3 (`uv run *` within the backend working directory). |
-| G5 | `uv run uvicorn backend.main:app --port <N>` + `curl -s -X POST ... http://localhost:<N>/analyze` | Bastion (Backend Architect) | Backend server smoke test. Same `uv run *` family as G4; curl is the HTTP probe needed to verify the endpoint is reachable. Scope: start server, fire one curl, report JSON, kill server. Bastion must not leave servers running. |
-| G6 | `uv run python -m backend.scripts.fetch_ducats` | Bastion (Backend Architect) | Build-time data-fetch script lives in `backend/scripts/`. Same `uv run *` family; backend ownership is unambiguous. |
+| G1 | `pnpm build` | Atrium 🏛️ (Frontend Architect) | Atrium owns build-tooling deps and frontend build output. `pnpm build` is a frontend build command — same family as `pnpm install` for build tooling. Atrium already uses Read/Glob/Grep to verify frontend artifacts; adding `pnpm build` keeps the command family cohesive. |
+| G2 | `pnpm dev` | Atrium 🏛️ (Frontend Architect) | `pnpm dev` starts the Vite/Astro dev server — a frontend build-tooling operation. Same ownership rationale as G1. Scope: start server for smoke test only; Atrium does not own the running server lifecycle beyond the test step. |
+| G3 | `uv sync` | Bastion 🧱 (Backend Architect) | Bastion owns backend Python files. `uv sync` installs the backend's locked dep tree — the backend-side analogue of `pnpm install`. Bastion currently has no Bash grant (spec: `tools: Read, Glob, Grep`); adding `uv sync` is a minimal single-family extension. |
+| G4 | `uv run pytest tests/ -v` | Bastion 🧱 (Backend Architect) | Running the Python test suite is backend verification work — Bastion's domain. Single family with G3 (`uv run *` within the backend working directory). |
+| G5 | `uv run uvicorn backend.main:app --port <N>` + `curl -s -X POST ... http://localhost:<N>/analyze` | Bastion 🧱 (Backend Architect) | Backend server smoke test. Same `uv run *` family as G4; curl is the HTTP probe needed to verify the endpoint is reachable. Scope: start server, fire one curl, report JSON, kill server. Bastion must not leave servers running. |
+| G6 | `uv run python -m backend.scripts.fetch_ducats` | Bastion 🧱 (Backend Architect) | Build-time data-fetch script lives in `backend/scripts/`. Same `uv run *` family; backend ownership is unambiguous. |
 
 ### Grant assignment conditions (per CLAUDE.md §"Bash grant registry")
 
-All six gaps route to Bastion (Backend Architect) or extend Atrium (Frontend Architect). Both satisfy the gate registry rule: single operation family, justification in Augur's brief (this document), requires Marshal (HR Director) review and Sentinel (Quality Guardian) gate before CLAUDE.md is edited.
+All six gaps route to Bastion 🧱 (Backend Architect) or extend Atrium 🏛️ (Frontend Architect). Both satisfy the gate registry rule: single operation family, justification in Augur 🔮 (Senior Research Analyst)'s brief (this document), requires Marshal 🎖️ (HR Director) review and Sentinel 🛡️ (Quality Guardian) gate before CLAUDE.md is edited.
 
 **Bastion grant scope proposed:** `uv sync` (within `backend/`), `uv run pytest <args>` (within `backend/`), `uv run uvicorn <args>`, `curl -s -X POST -F <args> http://localhost:<port>/analyze`, `uv run python -m backend.scripts.<script>`. All commands scoped to `backend/` working directory.
 
@@ -99,16 +99,16 @@ gh pr edit <number> --body "<inline string>"
 
 **Rationale:**
 - `gh pr view <number> --json body --jq .body` — fetch the current PR body for parsing. This is a superset of the existing `gh pr view <number> --json title,body,files,state` grant; the `--jq` flag is a filter variant of the same command. It is additive, not a new family.
-- `gh pr edit <number> --body-file <file>` — push the rewritten body (checkbox ticks + evidence) back to GitHub. This is the only state-mutation Inquisitor needs that Herald (Release Manager) does not own — PR body content is review evidence, not a git artifact.
+- `gh pr edit <number> --body-file <file>` — push the rewritten body (checkbox ticks + evidence) back to GitHub. This is the only state-mutation Inquisitor 🔎 (PR Reviewer) needs that Herald 📯 (Release Manager) does not own — PR body content is review evidence, not a git artifact.
 - `gh pr edit <number> --body "<inline string>"` — short-form tick for single-item updates without a temp file.
 
-**Why not Herald?** Herald owns PR lifecycle (create, push, merge) but does not own review-evidence updates to the PR body. Making Herald a middleman for checkbox ticks on every test-plan item would require Inquisitor to relay specialist evidence through Cipher to Herald — unnecessary round-trip that reintroduces the Cipher-forgets problem. Inquisitor writing the ticked body is the same pattern as Inquisitor already writing `gh pr comment` — it is review output, not a git operation.
+**Why not Herald?** Herald 📯 (Release Manager) owns PR lifecycle (create, push, merge) but does not own review-evidence updates to the PR body. Making Herald a middleman for checkbox ticks on every test-plan item would require Inquisitor to relay specialist evidence through Cipher 🔓 (Dev-Team Orchestrator) to Herald — unnecessary round-trip that reintroduces the Cipher-forgets problem. Inquisitor writing the ticked body is the same pattern as Inquisitor already writing `gh pr comment` — it is review output, not a git operation.
 
 **Inquisitor must NOT gain:**
-- `pnpm *` — Atrium, Crucible, Warden own those families
-- `uv *` — Bastion owns that family (proposed)
+- `pnpm *` — Atrium 🏛️ (Frontend Architect), Crucible 🔥 (Test Architect), Warden 🔒 (Dependency Warden) own those families
+- `uv *` — Bastion 🧱 (Backend Architect) owns that family (proposed)
 - `curl *` — Bastion owns that family (within the smoke-test scope above)
-- Any `git *` — Herald owns all git
+- Any `git *` — Herald 📯 (Release Manager) owns all git
 - `gh pr merge`, `gh pr close` — Herald/user only
 
 ---
@@ -116,8 +116,8 @@ gh pr edit <number> --body "<inline string>"
 ## Section 4 — Dispatch Protocol
 
 ### Preconditions
-- Herald (Release Manager) has opened the PR and returned the PR URL + number to Cipher (Dev-Team Orchestrator).
-- Cipher dispatches Inquisitor with: PR number, branch name, task context (used for scope-creep evaluation and N/A determination).
+- Herald 📯 (Release Manager) has opened the PR and returned the PR URL + number to Cipher 🔓 (Dev-Team Orchestrator).
+- Cipher 🔓 (Dev-Team Orchestrator) dispatches Inquisitor 🔎 (PR Reviewer) with: PR number, branch name, task context (used for scope-creep evaluation and N/A determination).
 
 ### Sequence
 
@@ -138,18 +138,18 @@ INQUISITOR ENTRY
 ├─ 3. FOR EACH UNCHECKED ITEM → MAP TO SPECIALIST
 │     Parse item text → command family → agent (Section 1 matrix):
 │
-│     "pnpm install"           → Atrium (Frontend Architect)
-│     "pnpm build"             → Atrium (Frontend Architect)
-│     "pnpm dev"               → Atrium (Frontend Architect)
-│     "pnpm audit"             → Warden (Dependency Warden)
-│     "pnpm agent-browser *"   → Lumen (Visual Director)
-│     "uv sync"                → Bastion (Backend Architect)
-│     "uv run pytest *"        → Bastion (Backend Architect)
-│     "uv run uvicorn * + curl"→ Bastion (Backend Architect)
-│     "uv run python -m *"     → Bastion (Backend Architect)
-│     "Verify file exists / contains key"  → Inquisitor self (Read/Grep)
-│     "Verify package.json / pyproject.toml pins"  → Inquisitor self (Read/Grep)
-│     "JSON-LD / SEO meta in built HTML"  → Inquisitor self (Read/Grep on dist/)
+│     "pnpm install"           → Atrium 🏛️ (Frontend Architect)
+│     "pnpm build"             → Atrium 🏛️ (Frontend Architect)
+│     "pnpm dev"               → Atrium 🏛️ (Frontend Architect)
+│     "pnpm audit"             → Warden 🔒 (Dependency Warden)
+│     "pnpm agent-browser *"   → Lumen ✨ (Visual Director)
+│     "uv sync"                → Bastion 🧱 (Backend Architect)
+│     "uv run pytest *"        → Bastion 🧱 (Backend Architect)
+│     "uv run uvicorn * + curl"→ Bastion 🧱 (Backend Architect)
+│     "uv run python -m *"     → Bastion 🧱 (Backend Architect)
+│     "Verify file exists / contains key"  → Inquisitor 🔎 (PR Reviewer) self (Read/Grep)
+│     "Verify package.json / pyproject.toml pins"  → Inquisitor 🔎 (PR Reviewer) self (Read/Grep)
+│     "JSON-LD / SEO meta in built HTML"  → Inquisitor 🔎 (PR Reviewer) self (Read/Grep on dist/)
 │     UNMATCHED               → flag as UNROUTABLE (see edge cases)
 │
 ├─ 4. DISPATCH SPECIALISTS (parallel where independent)
@@ -210,49 +210,49 @@ Independent of the above:
 
 Condition: PR body contains no `- [ ]` or `- [x]` lines.
 
-Action: Inquisitor skips dispatch. Returns `[PASS]` to Cipher with note: "Test plan section absent or empty — no items to verify." Appends observation to audit report. Does not block.
+Action: Inquisitor 🔎 (PR Reviewer) skips dispatch. Returns `[PASS]` to Cipher 🔓 (Dev-Team Orchestrator) with note: "Test plan section absent or empty — no items to verify." Appends observation to audit report. Does not block.
 
-Risk: empty test plans should be flagged as a Herald quality issue, not an Inquisitor BLOCK. Inquisitor notes it; Cipher decides whether to route back to Herald for a test plan addition.
+Risk: empty test plans should be flagged as a Herald 📯 (Release Manager) quality issue, not an Inquisitor 🔎 (PR Reviewer) BLOCK. Inquisitor notes it; Cipher 🔓 (Dev-Team Orchestrator) decides whether to route back to Herald 📯 (Release Manager) for a test plan addition.
 
 ### EC-2: Item is N/A for current PR phase
 
 Pattern observed: PR #3, item 8 — `POST /analyze` endpoint test — marked `~~strikethrough~~ — N/A: phase 07 scope is scaffold only`.
 
-Rule: Inquisitor checks each item's text for N/A markers (`~~...~~`, `N/A:` inline annotation, or a parenthetical `(N/A ...)` appended by the PR author). Items with an existing N/A annotation are skipped — do not dispatch, do not overwrite. Inquisitor records them in the audit report as "skipped — N/A by PR author."
+Rule: Inquisitor 🔎 (PR Reviewer) checks each item's text for N/A markers (`~~...~~`, `N/A:` inline annotation, or a parenthetical `(N/A ...)` appended by the PR author). Items with an existing N/A annotation are skipped — do not dispatch, do not overwrite. Inquisitor 🔎 (PR Reviewer) records them in the audit report as "skipped — N/A by PR author."
 
-Inquisitor does NOT determine N/A autonomously based on task context. Only the PR author's explicit annotation confers N/A status. If an item is unchecked and has no N/A annotation but appears out of scope for the current phase, Inquisitor flags it to Cipher as UNROUTABLE rather than silently skipping it.
+Inquisitor 🔎 (PR Reviewer) does NOT determine N/A autonomously based on task context. Only the PR author's explicit annotation confers N/A status. If an item is unchecked and has no N/A annotation but appears out of scope for the current phase, Inquisitor 🔎 (PR Reviewer) flags it to Cipher 🔓 (Dev-Team Orchestrator) as UNROUTABLE rather than silently skipping it.
 
 ### EC-3: Command does not match any specialist (UNROUTABLE)
 
 Examples: `python .claude/skills/plan-enforce/scripts/test_validate_plan.py` (PR #1 one-off), Lighthouse manual score (PR #4 item 8 — "manual, optional this PR").
 
-Action: Inquisitor marks item `(UNROUTABLE: no agent holds the grant for this command)` and returns BLOCK signal citing the unroutable items. Cipher must either: assign the item to a specialist who gains a new grant (Augur research → Marshal spec edit → Sentinel gate), or acknowledge it as a manual/optional item and instruct Inquisitor to skip.
+Action: Inquisitor 🔎 (PR Reviewer) marks item `(UNROUTABLE: no agent holds the grant for this command)` and returns BLOCK signal citing the unroutable items. Cipher 🔓 (Dev-Team Orchestrator) must either: assign the item to a specialist who gains a new grant (Augur 🔮 (Senior Research Analyst) research → Marshal 🎖️ (HR Director) spec edit → Sentinel 🛡️ (Quality Guardian) gate), or acknowledge it as a manual/optional item and instruct Inquisitor 🔎 (PR Reviewer) to skip.
 
-Exception for "manual, optional" items: if the item text includes the word "manual" or "optional", Inquisitor flags it as ADVISORY rather than BLOCK — the PR author explicitly signaled human verification is acceptable.
+Exception for "manual, optional" items: if the item text includes the word "manual" or "optional", Inquisitor 🔎 (PR Reviewer) flags it as ADVISORY rather than BLOCK — the PR author explicitly signaled human verification is acceptable.
 
 ### EC-4: Specialist command fails (non-zero exit)
 
-Action: Inquisitor marks the item `(BLOCKED: <agent> returned exit code <N> — <stderr excerpt ≤ 3 lines>)`. Returns BLOCK signal to Cipher. Cipher routes the failure to Forge (Implementation Agent) for remediation. After Forge fixes and Herald commits, Cipher re-dispatches Inquisitor for the failed item only (not the full test plan).
+Action: Inquisitor 🔎 (PR Reviewer) marks the item `(BLOCKED: <agent> returned exit code <N> — <stderr excerpt ≤ 3 lines>)`. Returns BLOCK signal to Cipher 🔓 (Dev-Team Orchestrator). Cipher 🔓 (Dev-Team Orchestrator) routes the failure to Forge 🔨 (Implementation Agent) for remediation. After Forge 🔨 (Implementation Agent) fixes and Herald 📯 (Release Manager) commits, Cipher 🔓 (Dev-Team Orchestrator) re-dispatches Inquisitor 🔎 (PR Reviewer) for the failed item only (not the full test plan).
 
 ### EC-5: PR body was updated between Inquisitor fetch and push
 
 Risk: if Cipher or another process edits the PR body between step 1 (fetch) and step 7 (push), the `gh pr edit --body-file` call overwrites the intermediate edit.
 
-Mitigation: Inquisitor reads the body a second time immediately before step 6 (rewrite), merges the tick state with any new content, then pushes. If the second fetch differs from the first in ways beyond checkbox ticks (new content sections added), Inquisitor reports the divergence to Cipher and waits for instruction rather than overwriting blindly.
+Mitigation: Inquisitor 🔎 (PR Reviewer) reads the body a second time immediately before step 6 (rewrite), merges the tick state with any new content, then pushes. If the second fetch differs from the first in ways beyond checkbox ticks (new content sections added), Inquisitor 🔎 (PR Reviewer) reports the divergence to Cipher 🔓 (Dev-Team Orchestrator) and waits for instruction rather than overwriting blindly.
 
 ### EC-6: `pnpm build` produces `dist/` but a subsequent JSON-LD check is part of the same PR
 
-Inquisitor must dispatch Atrium for `pnpm build` first (serial), wait for PASS, then execute the JSON-LD/SEO self-check using Read/Grep on `frontend/dist/index.html`. This is a data dependency — enforce serial ordering, not parallel.
+Inquisitor 🔎 (PR Reviewer) must dispatch Atrium 🏛️ (Frontend Architect) for `pnpm build` first (serial), wait for PASS, then execute the JSON-LD/SEO self-check using Read/Grep on `frontend/dist/index.html`. This is a data dependency — enforce serial ordering, not parallel.
 
 ### EC-7: Bastion currently has no Bash grant
 
-This is the single highest-risk gap. Until Marshal (HR Director) edits Bastion's spec and CLAUDE.md, and Sentinel (Quality Guardian) gates those edits, Bastion cannot run any `uv *` command. Any PR with uv-based test-plan items (all backend PRs after #4) cannot be fully verified by the automated flow.
+This is the single highest-risk gap. Until Marshal 🎖️ (HR Director) edits Bastion 🧱 (Backend Architect)'s spec and CLAUDE.md, and Sentinel 🛡️ (Quality Guardian) gates those edits, Bastion 🧱 (Backend Architect) cannot run any `uv *` command. Any PR with uv-based test-plan items (all backend PRs after #4) cannot be fully verified by the automated flow.
 
-Interim mitigation: Inquisitor marks uv-family items as UNROUTABLE with note "Bastion uv grant pending spec edit — manual verification required." Returns BLOCK for those items. Cipher escalates to Marshal/Sentinel for the spec edit.
+Interim mitigation: Inquisitor 🔎 (PR Reviewer) marks uv-family items as UNROUTABLE with note "Bastion 🧱 (Backend Architect) uv grant pending spec edit — manual verification required." Returns BLOCK for those items. Cipher 🔓 (Dev-Team Orchestrator) escalates to Marshal 🎖️ (HR Director) / Sentinel 🛡️ (Quality Guardian) for the spec edit.
 
 ### EC-8: Inquisitor's current spec prohibits `gh pr edit`
 
-The current inquisitor spec Hard Rules section explicitly lists `gh pr edit` as prohibited: "Any `gh pr merge`, `gh pr close`, `gh pr edit` — state mutations beyond read and comment." This prohibition must be lifted by Marshal (HR Director) + Sentinel (Quality Guardian) before the new workflow is live.
+The current Inquisitor 🔎 (PR Reviewer) spec Hard Rules section explicitly lists `gh pr edit` as prohibited: "Any `gh pr merge`, `gh pr close`, `gh pr edit` — state mutations beyond read and comment." This prohibition must be lifted by Marshal 🎖️ (HR Director) + Sentinel 🛡️ (Quality Guardian) before the new workflow is live.
 
 ---
 
@@ -281,40 +281,40 @@ Add a new row after "Cross-file PR review":
 
 **Trigger description elaboration (prose, to appear below the table or as a note):**
 
-> Inquisitor (PR Reviewer) runs test-plan verification immediately after Herald (Release Manager) opens the PR and returns the URL. Inquisitor fetches the PR body, parses unchecked `- [ ]` items, dispatches each to the specialist agent that holds the relevant bash grant, collects evidence, rewrites the PR body with ticked items and evidence annotations, then returns PASS or BLOCK to Cipher (Dev-Team Orchestrator).
+> Inquisitor 🔎 (PR Reviewer) runs test-plan verification immediately after Herald 📯 (Release Manager) opens the PR and returns the URL. Inquisitor 🔎 (PR Reviewer) fetches the PR body, parses unchecked `- [ ]` items, dispatches each to the specialist agent that holds the relevant bash grant, collects evidence, rewrites the PR body with ticked items and evidence annotations, then returns PASS or BLOCK to Cipher 🔓 (Dev-Team Orchestrator).
 
 ### 6b — Bash grant registry table
 
-**Current Inquisitor row:**
+**Current Inquisitor 🔎 (PR Reviewer) row:**
 
 ```
-| Inquisitor (PR Reviewer) | `git diff main...HEAD`, `git diff main...HEAD -- <file>`, `git log main...HEAD --oneline`, `gh pr view <number>`, `gh pr view <number> --json title,body,files,state`, `gh pr review <number> --comment --body "<body>"`, `gh pr comment <number> --body "<body>"` |
+| Inquisitor 🔎 (PR Reviewer) | `git diff main...HEAD`, `git diff main...HEAD -- <file>`, `git log main...HEAD --oneline`, `gh pr view <number>`, `gh pr view <number> --json title,body,files,state`, `gh pr review <number> --comment --body "<body>"`, `gh pr comment <number> --body "<body>"` |
 ```
 
-**Updated Inquisitor row (add three commands):**
+**Updated Inquisitor 🔎 (PR Reviewer) row (add three commands):**
 
 ```
-| Inquisitor (PR Reviewer) | `git diff main...HEAD`, `git diff main...HEAD -- <file>`, `git log main...HEAD --oneline`, `gh pr view <number>`, `gh pr view <number> --json title,body,files,state`, `gh pr view <number> --json body --jq .body`, `gh pr review <number> --comment --body "<body>"`, `gh pr comment <number> --body "<body>"`, `gh pr edit <number> --body-file <file>`, `gh pr edit <number> --body "<inline string>"` |
+| Inquisitor 🔎 (PR Reviewer) | `git diff main...HEAD`, `git diff main...HEAD -- <file>`, `git log main...HEAD --oneline`, `gh pr view <number>`, `gh pr view <number> --json title,body,files,state`, `gh pr view <number> --json body --jq .body`, `gh pr review <number> --comment --body "<body>"`, `gh pr comment <number> --body "<body>"`, `gh pr edit <number> --body-file <file>`, `gh pr edit <number> --body "<inline string>"` |
 ```
 
-**New Atrium row (add two commands to existing grant):**
+**New Atrium 🏛️ (Frontend Architect) row (add two commands to existing grant):**
 
 Current: `pnpm install` for production/build-tooling deps
 
 Updated: `pnpm install` for production/build-tooling deps; `pnpm build`; `pnpm dev` (both scoped to `frontend/` working directory; dev server must be stopped after test-plan item completes)
 
-**New Bastion row (currently no Bash grant — new row):**
+**New Bastion 🧱 (Backend Architect) row (currently no Bash grant — new row):**
 
 ```
-| Bastion (Backend Architect) | `uv sync` (within `backend/`), `uv run pytest <args>` (within `backend/`), `uv run uvicorn <args>`, `uv run python -m backend.scripts.<script>`, `curl -s -X POST -F <args> http://localhost:<port>/analyze` |
+| Bastion 🧱 (Backend Architect) | `uv sync` (within `backend/`), `uv run pytest <args>` (within `backend/`), `uv run uvicorn <args>`, `uv run python -m backend.scripts.<script>`, `curl -s -X POST -F <args> http://localhost:<port>/analyze` |
 ```
 
 ### 6c — Cipher Hard Rules additions
 
-Add one new rule to the "Cipher Hard Rules" section:
+Add one new rule to the "Cipher 🔓 (Dev-Team Orchestrator) Hard Rules" section:
 
 ```
-- **Test-plan-verification-gate.** After Herald returns a PR URL, Cipher MUST dispatch Inquisitor (PR Reviewer) for test-plan verification before marking the PR ready. Cipher does not manually tick test-plan checkboxes — Inquisitor owns that surface. Exception: empty test plan (Inquisitor returns PASS immediately with a note).
+- **Test-plan-verification-gate.** After Herald 📯 (Release Manager) returns a PR URL, Cipher 🔓 (Dev-Team Orchestrator) MUST dispatch Inquisitor 🔎 (PR Reviewer) for test-plan verification before marking the PR ready. Cipher 🔓 (Dev-Team Orchestrator) does not manually tick test-plan checkboxes — Inquisitor 🔎 (PR Reviewer) owns that surface. Exception: empty test plan (Inquisitor 🔎 (PR Reviewer) returns PASS immediately with a note).
 ```
 
 ### 6d — Inquisitor spec (`inquisitor.md`) — Bash Command Allowlist section
@@ -331,6 +331,12 @@ gh pr view <number> --json body --jq .body
 gh pr edit <number> --body-file <file>
 gh pr edit <number> --body "<inline string>"
 ```
+
+---
+
+## Summary of Key Findings
+
+Comprehensive analysis of test-plan verification workflow ownership and specialist dispatch protocol. Identifies 6 critical Bash grant gaps (Bastion 🧱 (Backend Architect) `uv *` family, Atrium 🏛️ (Frontend Architect) `pnpm build`/`pnpm dev`, Inquisitor 🔎 (PR Reviewer) `gh pr edit`). Proposes updated Inquisitor 🔎 (PR Reviewer) spec, CLAUDE.md table additions, and detailed dispatch protocol with serialization rules, edge cases, and interim mitigations.
 
 ---
 
