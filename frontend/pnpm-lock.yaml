@@ -33,6 +33,9 @@ importers:
       '@types/react-dom':
         specifier: 18.3.7
         version: 18.3.7(@types/react@18.3.29)
+      agent-browser:
+        specifier: 0.27.0
+        version: 0.27.0
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -852,6 +855,10 @@ packages:
   acorn@8.16.0:
     resolution: {integrity: sha512-UVJyE9MttOsBQIDKw1skb9nAwQuR5wuGD3+82K6JgJlm/Y+KI92oNsMNGZCYdDsVtRHSak0pcV5Dno5+4jh9sw==}
     engines: {node: '>=0.4.0'}
+    hasBin: true
+
+  agent-browser@0.27.0:
+    resolution: {integrity: sha512-mmHzVsYFVA6nshNNGJzg83aVMgKpf4h98ytY3pvtJB1Cot0ZyA2bfnkbSngGD56Azkj+GlhVH6qx9DfKOVE0yg==}
     hasBin: true
 
   ansi-align@3.0.1:
@@ -2642,6 +2649,8 @@ snapshots:
       - supports-color
 
   acorn@8.16.0: {}
+
+  agent-browser@0.27.0: {}
 
   ansi-align@3.0.1:
     dependencies:
