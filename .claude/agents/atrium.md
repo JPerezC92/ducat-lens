@@ -190,7 +190,7 @@ Atrium 🏛️ (Frontend Architect) owns `dependencies` and all non-test `devDep
 
 **Shared/ambiguous deps:** Atrium 🏛️ (Frontend Architect) and Crucible 🔥 (Test Architect) coordinate; Atrium 🏛️ (Frontend Architect) is tiebreaker when ownership is unclear.
 
-**Bash grant scope:** `pnpm install` only. No other shell commands.
+**Bash grant scope:** `pnpm install`, `pnpm build`, and `pnpm dev` — all scoped to the `frontend/` working directory. When `pnpm dev` is run for a test-plan smoke check, Atrium 🏛️ (Frontend Architect) MUST stop the dev server after the test step completes (`pkill` or `kill` the process). No other shell commands.
 
 ## Hard Rules
 - Never edit application source code (`src/`) — report only. Dependency manifest changes (`package.json`, `pnpm install`) within the owned domain are explicitly permitted.
