@@ -116,8 +116,8 @@ Full reasoning + raw evidence in `_research-ducat-api.md` and `_architecture.md`
 - ✅ phase-06 — (⚠️ superseded by phase 11) eval cycle ran iter-1 + iter-2; with_skill 100%, baseline 88.9%. Workspace archived.
 - ✅ phase-11 — task-runbook deleted; plan-enforce bundle complete with `scripts/validate_plan.py` (24.7K) + `test_validate_plan.py` (36 pytest cases green) + `scripts/fixtures/plan-valid/`; `references/plan-config-schema.md` + `example-config-plan.yaml` written; SKILL.md §§ 2.6 + 2.7 + 3 Troubleshooting entries added; zero incident-vocab hits; `plans/_template.md` updated to YAML frontmatter; eval workspace archived to `plans/_archive/task-runbook-evals-20260524/`. Bastion 🧱 PASS. Crucible 🔥 PASS. Sentinel 🛡️ FAIL → 9 mechanical fixes applied (naming convention + SDP vocab swap) → effective PASS post-fix.
 - ⬜ phase-06 — `evals/evals.json` written with ≥3 realistic test prompts; with-skill + without-skill subagent runs complete; `benchmark.json` produced; user feedback collected via viewer
-- ⬜ phase-07 — `pnpm install && pnpm run dev` boots frontend on :5173; `uvicorn main:app --reload` boots backend on :8000; `data/ducats.json` populated
-- ⬜ phase-08 — `POST /analyze` with `image.png` returns JSON list of detected items + ducats + recommendation
+- ✅ phase-07 — `pnpm install && pnpm run dev` boots frontend on :5173; `uvicorn main:app --reload` boots backend on :8000; `data/ducats.json` populated. Shipped PR #3 (2026-05-25).
+- ✅ phase-08 — `POST /analyze` with `image.png` returns JSON list of detected items + ducats + recommendation. Shipped PR #4 (2026-05-25).
 - ⬜ phase-09 — Browser: drag-drop `image.png` → results table renders within 10s
 - ⬜ phase-10 — Atrium PASS on frontend, Bastion PASS on backend, Crucible PASS on test pyramid (≥1 unit per critical fn)
 
