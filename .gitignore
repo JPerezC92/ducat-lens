@@ -4,6 +4,7 @@ node_modules/
 dist/
 build/
 .vite/
+frontend/.astro/             # Astro internal cache (type-gen, route manifest)
 
 # Python
 __pycache__/
