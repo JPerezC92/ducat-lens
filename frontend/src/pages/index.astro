@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DucatAnalyzer from '../components/DucatAnalyzer';
+
+const pageTitle = 'ducat-lens — Warframe Ducat Kiosk analyzer';
+const pageDescription =
+  'Upload your Warframe Ducat Kiosk screenshot and instantly see ducat values plus sell recommendations for every Prime part in your inventory. Free, no signup, no install.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'ducat-lens',
+  description: pageDescription,
+  applicationCategory: 'GameApplication',
+  operatingSystem: 'Web',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+};
+---
+
+<BaseLayout title={pageTitle} description={pageDescription} jsonLd={jsonLd}>
+  <main>
+    <h1>ducat-lens</h1>
+
+    <p>
+      Upload your Warframe Ducat Kiosk screenshot and instantly see ducat values
+      plus sell recommendations for every Prime part in your inventory. Free, no
+      signup, no install.
+    </p>
+
+    <h2>How it works</h2>
+    <ol>
+      <li>Upload a screenshot of your Warframe Ducat Kiosk inventory.</li>
+      <li>AI detects every Prime part visible in the screenshot.</li>
+      <li>
+        See ducat values and sell recommendations for each detected part.
+      </li>
+    </ol>
+
+    <h2>Features</h2>
+    <ul>
+      <li>Free and no signup required — works instantly in your browser.</li>
+      <li>Offline-capable backend — no outbound calls at request time.</li>
+      <li>
+        Covers all Prime weapons, Warframes, and companions in the ducat lookup.
+      </li>
+      <li>
+        Sell recommendations based on ducat value thresholds (high / mid / low).
+      </li>
+    </ul>
+
+    <DucatAnalyzer client:load />
+  </main>
+</BaseLayout>
