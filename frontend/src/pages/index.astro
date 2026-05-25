@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import DucatAnalyzer from '../components/DucatAnalyzer';
 
-const pageTitle = 'ducat-lens — Warframe Ducat Kiosk analyzer';
+const pageTitle = 'ducat-lens: Warframe Ducat Kiosk analyzer';
 const pageDescription =
   'Upload your Warframe Ducat Kiosk screenshot and instantly see ducat values plus sell recommendations for every Prime part in your inventory. Free, no signup, no install.';
 
@@ -22,16 +22,16 @@ const jsonLd = {
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription} jsonLd={jsonLd}>
-  <main>
-    <h1>ducat-lens</h1>
+  <main class="max-w-3xl mx-auto px-6 py-8">
+    <h1 class="font-heading text-3xl md:text-4xl tracking-wide text-accent-blue">ducat-lens</h1>
 
-    <p>
+    <p class="text-text-muted">
       Upload your Warframe Ducat Kiosk screenshot and instantly see ducat values
       plus sell recommendations for every Prime part in your inventory. Free, no
       signup, no install.
     </p>
 
-    <h2>How it works</h2>
+    <h2 class="font-heading text-xl md:text-2xl tracking-wide text-text">How it works</h2>
     <ol>
       <li>Upload a screenshot of your Warframe Ducat Kiosk inventory.</li>
       <li>AI detects every Prime part visible in the screenshot.</li>
@@ -40,10 +40,10 @@ const jsonLd = {
       </li>
     </ol>
 
-    <h2>Features</h2>
+    <h2 class="font-heading text-xl md:text-2xl tracking-wide text-text">Features</h2>
     <ul>
-      <li>Free and no signup required — works instantly in your browser.</li>
-      <li>Offline-capable backend — no outbound calls at request time.</li>
+      <li>Free and no signup required, works instantly in your browser.</li>
+      <li>Offline-capable backend, no outbound calls at request time.</li>
       <li>
         Covers all Prime weapons, Warframes, and companions in the ducat lookup.
       </li>

@@ -1,0 +1,169 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  /* Warframe 1999 / Höllvania design tokens — see knowledge/research/warframe-1999-visual-spec.md */
+
+  /* Backgrounds */
+  --color-bg: #0d0f14;
+  --color-surface: #1a1d26;
+  --color-surface-alt: #14172a;
+
+  /* Text */
+  --color-text-primary: #e8eaf0;
+  --color-text-secondary: #8a9ab0;
+  --color-text-muted: #6e7e9c;
+
+  /* Accent (UI chrome, borders, icons) */
+  --color-accent-blue: #3fc8e0;
+
+  /* Token gold (reserved: ducat values + logo only) */
+  --color-token-gold: #c8a84b;
+
+  /* Status */
+  --color-status-success: #4cde5a;
+  --color-status-warning: #d4b820;
+  --color-status-error: #e03030;
+  --color-status-unknown: #d4b820;
+
+  /* Typography */
+  --font-heading: "Rajdhani", "Barlow Condensed", sans-serif;
+  --font-data: "IBM Plex Mono", "Share Tech Mono", monospace;
+  --font-body: "Roboto", sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+  }
+  * {
+    @apply border-border outline-ring/50;
+  }
+}
+
+@theme inline {
+  --font-sans: var(--font-body);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Scan-sweep animation for analysis progress bar */
+@keyframes scan-sweep {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+@layer utilities {
+  .animate-scan-sweep {
+    animation: scan-sweep 0.4s linear forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-scan-sweep {
+      animation: none;
+      width: 100%;
+    }
+  }
+}
+
+/* Heading utility — weight + tracking supplement (Tailwind v4 only sets family) */
+.font-heading {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+/* ASCII bracket corners for upload zone */
+.bracket-corners::before,
+.bracket-corners::after {
+  content: '⌐ ¬';
+  position: absolute;
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  color: var(--color-accent-blue);
+  opacity: 0.7;
+  pointer-events: none;
+}
+.bracket-corners::before { top: 6px; left: 8px; }
+.bracket-corners::after  { bottom: 6px; right: 8px; content: '└ ┘'; }
+
+/*
+ * Shadcn tokens mapped to 1999 palette.
+ * Site is permanently dark Höllvania — :root IS the dark theme.
+ * No .dark class toggle. Use 1999 colors via @theme above; shadcn
+ * components pull from these aliases.
+ */
+:root {
+  color-scheme: dark;
+  --background: var(--color-bg);
+  --foreground: var(--color-text-primary);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-text-primary);
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-text-primary);
+  --primary: var(--color-accent-blue);
+  --primary-foreground: var(--color-bg);
+  --secondary: var(--color-surface-alt);
+  --secondary-foreground: var(--color-text-primary);
+  --muted: var(--color-surface-alt);
+  --muted-foreground: var(--color-text-secondary);
+  --accent: var(--color-accent-blue);
+  --accent-foreground: var(--color-bg);
+  --destructive: var(--color-status-error);
+  --border: rgba(63, 200, 224, 0.25);
+  --input: rgba(63, 200, 224, 0.25);
+  --ring: var(--color-accent-blue);
+  --chart-1: var(--color-accent-blue);
+  --chart-2: var(--color-token-gold);
+  --chart-3: var(--color-status-success);
+  --chart-4: var(--color-status-warning);
+  --chart-5: var(--color-status-error);
+  --radius: 0.125rem;
+  --sidebar: var(--color-surface);
+  --sidebar-foreground: var(--color-text-primary);
+  --sidebar-primary: var(--color-accent-blue);
+  --sidebar-primary-foreground: var(--color-bg);
+  --sidebar-accent: var(--color-surface-alt);
+  --sidebar-accent-foreground: var(--color-text-primary);
+  --sidebar-border: rgba(63, 200, 224, 0.25);
+  --sidebar-ring: var(--color-accent-blue);
+}
