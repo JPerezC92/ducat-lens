@@ -21,18 +21,21 @@ Forge 🔨 (Implementation Agent)
 
 ## Writes
 
-### Frontend scaffold (`frontend/`)
-- `frontend/package.json` — react 18, react-dom 18, react-dropzone (latest); dev: @types/react, @types/react-dom, @vitejs/plugin-react, typescript 5.x, vite (latest)
-- `frontend/vite.config.ts` — minimal: React plugin, dev server port 5173, proxy `/analyze` to `http://localhost:8000`
-- `frontend/tsconfig.json` — strict mode on, JSX react-jsx, target ES2022
-- `frontend/index.html` — minimal shell, root div, mount point
-- `frontend/src/main.tsx` — React 18 createRoot bootstrap
-- `frontend/src/App.tsx` — empty placeholder component (phase 09 will fill upload UI + results table; phase 07 just renders a heading "ducat-lens" to confirm boot)
-- `frontend/.gitignore` — Vite artifacts (already in repo `.gitignore`; verify no duplication)
+### Frontend scaffold (`frontend/`) — Astro + React islands (SEO HIGH)
+- `frontend/package.json` — deps: astro ^5, @astrojs/react latest, @astrojs/sitemap latest, react 18, react-dom 18, react-dropzone latest; dev: @types/react, @types/react-dom, typescript 5.x
+- `frontend/astro.config.mjs` — `defineConfig({ integrations: [react(), sitemap()], site: 'https://ducat-lens.example', output: 'static', server: { port: 4321, proxy: { '/analyze': 'http://localhost:8000' } } })` — NOTE: Astro dev server doesn't natively proxy. If proxy not supported in dev config, document workaround in README (env var `PUBLIC_API_BASE` for backend URL, fetch directly with CORS allowed from :4321 in backend main.py)
+- `frontend/tsconfig.json` — extends `astro/tsconfigs/strict`
+- `frontend/public/robots.txt` — `User-agent: *` allow all, `Sitemap: https://ducat-lens.example/sitemap-index.xml`
+- `frontend/src/env.d.ts` — `/// <reference types="astro/client" />`
+- `frontend/src/layouts/BaseLayout.astro` — shell: `<html lang="en">`, `<head>` includes `<SEO />`, `<body><slot /></body>`. Accepts props for title/description/ogImage
+- `frontend/src/components/SEO.astro` — reusable head meta: title, description, canonical link, Open Graph (og:title/description/image/url/type), Twitter cards (twitter:card/title/description/image), and an optional JSON-LD `WebApplication` schema script block
+- `frontend/src/pages/index.astro` — landing page using BaseLayout, contains crawlable substance: `<h1>ducat-lens</h1>`, one-paragraph description ("Upload a Warframe Ducat Kiosk screenshot and instantly see ducat values + sell recommendations for every Prime part you own."), bullet list of features, embedded image preview (alt-texted) of test fixture, and the `<DucatAnalyzer client:load />` React island. JSON-LD `WebApplication` schema in head via SEO component props.
+- `frontend/src/components/DucatAnalyzer.tsx` — React island stub: empty functional component returning a placeholder `<div>Phase 09 will implement upload + results table here</div>`. Phase 09 fills in react-dropzone upload + fetch to `/analyze` + results table.
+- Astro CORS note: backend `main.py` CORS middleware allows `http://localhost:4321` (Astro default dev port) in addition to or replacing `http://localhost:5173`. Cipher decision: replace 5173 with 4321 in this scaffold revision.
 
 ### Backend scaffold (`backend/`)
 - `backend/pyproject.toml` — project metadata + `[project.dependencies]` block listing: fastapi, `uvicorn[standard]`, python-multipart, pillow, rapidocr-onnxruntime, httpx, pydantic; `[project.optional-dependencies.dev]`: pytest, pytest-asyncio, ruff, mypy
-- `backend/main.py` — FastAPI app with single placeholder route `GET /` returning `{"status": "ok"}`; CORS middleware allowing localhost:5173 for dev
+- `backend/main.py` — FastAPI app with single placeholder route `GET /` returning `{"status": "ok"}`; CORS middleware allowing `http://localhost:4321` (Astro dev port) for dev
 - `backend/analyze.py` — empty module stub with docstring "OCR + ducat lookup + recommendation pipeline — implemented in phase 08"
 - `backend/ducats.py` — `load_ducats()` function that reads `data/ducats.json` and returns `dict[str, int]`; raises FileNotFoundError with helpful message if file missing (points to `python -m backend.scripts.fetch_ducats`)
 - `backend/__init__.py` — empty (package marker)
@@ -45,10 +48,11 @@ Forge 🔨 (Implementation Agent)
 
 ### README update
 - Append a new section `## Setup` to `README.md` documenting:
-  - `cd frontend && pnpm install && pnpm run dev` (boots Vite on :5173)
+  - `cd frontend && pnpm install && pnpm dev` (boots Astro dev server on :4321)
   - `cd backend && python -m venv .venv && source .venv/bin/activate && pip install -e .` (installs backend)
   - `python -m backend.scripts.fetch_ducats` (one-time ducat data fetch — re-run on Warframe updates)
   - `uvicorn backend.main:app --reload` (boots FastAPI on :8000)
+  - `cd frontend && pnpm build` (Astro static build for SEO crawlable HTML output)
 
 ## Steps
 
@@ -64,8 +68,9 @@ Forge 🔨 (Implementation Agent)
    - Verify `data/ducats.json` exists and contains ≥ 100 entries (load + `len(...)` check)
    - Verify a known sample: `"wisp prime blueprint"` should map to `100` (per `_research-ducat-api.md` confirmed sample table)
 
-4. **Scaffold frontend**:
-   - Write `frontend/package.json`, `vite.config.ts`, `tsconfig.json`, `index.html`, `src/main.tsx`, `src/App.tsx`
+4. **Scaffold frontend (Astro + React islands)**:
+   - Write `frontend/package.json`, `astro.config.mjs`, `tsconfig.json`, `public/robots.txt`, `src/env.d.ts`, `src/layouts/BaseLayout.astro`, `src/components/SEO.astro`, `src/components/DucatAnalyzer.tsx`, `src/pages/index.astro`
+   - SEO must be wired (per `_architecture.md` SEO requirements section): `<SEO />` rendered in `<head>`, JSON-LD `WebApplication` schema in landing page, canonical link, og + twitter meta
    - Do NOT run `pnpm install` — Atrium 🏛️ (Frontend Architect) audit owns install for dep verification
 
 5. **Update README**: append `## Setup` section per Writes spec.

@@ -1,0 +1,24 @@
+{
+  "name": "ducat-lens-frontend",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5",
+    "@astrojs/react": "latest",
+    "@astrojs/sitemap": "latest",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-dropzone": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "typescript": "^5"
+  }
+}

@@ -1,11 +1,12 @@
 # Architecture lock — ducat-lens
 
-> Status: locked
+> Status: locked (revised 2026-05-25 for SEO + Astro swap)
 > Locked on: 2026-05-25
+> Revised: 2026-05-25 — frontend swap Vite+React → Astro+React-islands per user SEO HIGH priority
 > Locked by: Cipher 🔓 (Dev-Team Orchestrator)
 > Source plan: `plans/ducat-lens-bootstrap-20260524/plan.md` phase 03
 > Source research: `_research-vision.md` + `_research-ducat-api.md`
-> User decisions: vision=RapidOCR (always-free, no key); ducat source=WFCD/warframe-items; bundling=build-time
+> User decisions: vision=RapidOCR (always-free, no key); ducat source=WFCD/warframe-items; bundling=build-time; **SEO=HIGH (Google ranking target)**; **frontend=Astro with React islands**
 
 ---
 
@@ -19,11 +20,14 @@
 | Vision lib | **RapidOCR (ONNX)** | `rapidocr-onnxruntime` latest | Always free, no key, no signup; 0.21s/image CPU; ~30-80MB; same PP-OCR weights as PaddleOCR |
 | Image handling | Pillow | latest | Decode upload + preprocess (HSV crop, contrast) |
 | HTTP client (build-time fetch) | httpx (sync mode in script) | latest | Async-friendly, used by build script and any future runtime calls |
-| Frontend framework | React | 18 | Plan-locked |
-| Frontend build | Vite | latest | Plan-locked |
-| Frontend language | TypeScript | 5.x | Plan-locked |
-| Frontend file upload UI | react-dropzone | latest | Drag-drop primitive; minimal deps |
+| Frontend framework | **Astro** | 5.x | SEO HIGH — static-first, React islands for interactivity |
+| Frontend interactive runtime | React | 18 | Via `@astrojs/react` integration — islands only (upload form + results table) |
+| Frontend language | TypeScript | 5.x | Astro supports TS natively |
+| Frontend file upload UI | react-dropzone | latest | Used inside React island component |
 | Frontend HTTP | fetch (native) | n/a | No axios — keep deps small |
+| SEO meta | Astro `<head>` + reusable `SEO.astro` component | n/a | Per-page meta + Open Graph + Twitter cards |
+| Sitemap | `@astrojs/sitemap` | latest | Auto-generated at build time |
+| Structured data | JSON-LD in landing page `<head>` | n/a | `WebApplication` schema for Google rich results |
 | Package manager (FE) | pnpm | latest | Plan-locked |
 | Package manager (BE) | pip | bundled | Standard Python |
 
@@ -77,15 +81,21 @@ Key = normalized (lowercase, single-space) item name. Value = integer ducat amou
 
 ```
 ducat-lens/
-├── frontend/                    # React + Vite + TS app
+├── frontend/                    # Astro + React islands + TS app
 │   ├── package.json
-│   ├── vite.config.ts
+│   ├── astro.config.mjs         # Astro config: react + sitemap integrations, site URL
 │   ├── tsconfig.json
-│   ├── index.html
+│   ├── public/
+│   │   └── robots.txt           # allow all crawlers, point to sitemap
 │   └── src/
-│       ├── App.tsx
-│       ├── main.tsx
-│       └── components/
+│       ├── pages/
+│       │   └── index.astro      # Landing page (crawlable HTML + SEO meta + JSON-LD)
+│       ├── layouts/
+│       │   └── BaseLayout.astro # Shared shell
+│       ├── components/
+│       │   ├── SEO.astro        # Reusable head meta + OG + Twitter + JSON-LD
+│       │   └── DucatAnalyzer.tsx # React island: upload + results (client:load)
+│       └── env.d.ts             # Astro type defs
 ├── backend/                     # FastAPI Python app
 │   ├── pyproject.toml           # or requirements.txt
 │   ├── main.py                  # FastAPI app entry
@@ -135,6 +145,9 @@ mypy                    # type check (optional MVP)
 ```json
 {
   "dependencies": {
+    "astro": "^5",
+    "@astrojs/react": "latest",
+    "@astrojs/sitemap": "latest",
     "react": "^18",
     "react-dom": "^18",
     "react-dropzone": "latest"
@@ -142,14 +155,27 @@ mypy                    # type check (optional MVP)
   "devDependencies": {
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "@vitejs/plugin-react": "latest",
-    "typescript": "^5",
-    "vite": "latest"
+    "typescript": "^5"
   }
 }
 ```
 
-No CSS framework picked yet — defer to Lumen ✨ (Visual Director) brief in phase 09 (Lumen may recommend Tailwind, shadcn, or plain CSS modules based on design intent).
+No CSS framework picked yet — defer to Lumen ✨ (Visual Director) brief in phase 09 (Lumen may recommend Tailwind, shadcn-style components, scoped Astro `<style>`, or CSS modules based on design intent).
+
+---
+
+## SEO requirements (locked — user priority HIGH, 2026-05-25)
+
+- Landing page `/` MUST render crawlable HTML at build time. Astro static output target.
+- Per-page `<title>` + `<meta name="description">` + Open Graph (`og:title`, `og:description`, `og:image`, `og:url`, `og:type`) + Twitter cards (`twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`).
+- JSON-LD `WebApplication` schema in landing page `<head>` for Google rich results.
+- `@astrojs/sitemap` integration auto-generates `sitemap-index.xml` at build.
+- `public/robots.txt` — allow all crawlers, point to sitemap.
+- `<link rel="canonical">` per page.
+- Semantic HTML: single `<h1>` per page, structured headings, alt text on every `<img>`.
+- Lighthouse SEO score target ≥ 95 (verified phase 10 by Lumen ✨ via `impeccable` skill).
+- React islands (`DucatAnalyzer.tsx`) are interactive only — crawlable substance (title, description, how-to-use copy, screenshot preview) lives in `index.astro` body so crawlers see content without executing JS.
+- Site URL placeholder for sitemap + canonical: `https://ducat-lens.example` — Cipher 🔓 updates to real domain when deployment locked (deferred — out of scope for MVP).
 
 ---
 
@@ -207,6 +233,7 @@ Single endpoint for MVP. Future endpoints (out of scope): `/refresh-ducats`, `/h
 - Image storage / caching
 - Multi-image batch processing
 - Localization (English only)
+- Deploy domain lock (sitemap site URL placeholder until deployment phase)
 
 ---
 
