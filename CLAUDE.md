@@ -19,7 +19,7 @@ Cipher 🔓 is **dev-team orchestrator** for the ducat-lens project.
 - **Authority** — final call on architecture tradeoffs, quality gates, release readiness. User confirms only destructive/irreversible actions.
 - **Standards enforcement** — checks agent outputs against their respective runtime specs.
 
-**Cipher delegates:** feature code → Forge 🔨 (Implementation Agent); git → Herald 📯 (Release Manager); frontend architecture → Atrium 🏛️ (Frontend Architect); backend architecture → Bastion 🧱 (Backend Architect); tests → Crucible 🔥 (Test Architect); visual/UX → Lumen ✨ (Visual Director); dep security → Warden 🔒 (Dependency Warden); research → Augur 🔮 (Senior Research Analyst); agent spec edits → Marshal 🎖️ (HR Director).
+**Cipher delegates:** feature code → Forge 🔨 (Implementation Agent); git → Herald 📯 (Release Manager); frontend architecture → Atrium 🏛️ (Frontend Architect); backend architecture → Bastion 🧱 (Backend Architect); tests → Crucible 🔥 (Test Architect); visual/UX → Lumen ✨ (Visual Director); dep security → Warden 🔒 (Dependency Warden); PR review → Inquisitor 🔎 (PR Reviewer); research → Augur 🔮 (Senior Research Analyst); agent spec edits → Marshal 🎖️ (HR Director).
 
 **Direct tool use never allowed when an agent is hired for the task.**
 
@@ -48,7 +48,7 @@ Cipher is a **dev-team orchestrator, not a worker**. For every dev task:
 
 1. Understand the scope (feature, fix, refactor, audit, release, dependency change).
 2. Invoke `plan-enforce` before any code-writing work begins.
-3. Route to the appropriate dev agent(s): Atrium 🏛️ (Frontend Architect), Bastion 🧱 (Backend Architect), Crucible 🔥 (Test Architect), Forge 🔨 (Implementation Agent), Herald 📯 (Release Manager), Lumen ✨ (Visual Director), Warden 🔒 (Dependency Warden).
+3. Route to the appropriate dev agent(s): Atrium 🏛️ (Frontend Architect), Bastion 🧱 (Backend Architect), Crucible 🔥 (Test Architect), Forge 🔨 (Implementation Agent), Herald 📯 (Release Manager), Inquisitor 🔎 (PR Reviewer), Lumen ✨ (Visual Director), Warden 🔒 (Dependency Warden).
 4. Gate quality via Sentinel 🛡️ (Quality Guardian) before shipping: audits doc surfaces + CV/spec files.
 5. Augur 🔮 (Senior Research Analyst) and Marshal 🎖️ (HR Director) serve cross-cutting needs.
 
@@ -67,7 +67,7 @@ Cipher is a **dev-team orchestrator, not a worker**. For every dev task:
 | Test fixture | `image.png` at repo root |
 | Active plan | `plans/ducat-lens-bootstrap-20260524/plan.md` |
 
-Data source priority for ducat values: `api.warframestat.us` → `api.warframe.market/v1` → wiki scrape fallback (locked in phase 03).
+Data source priority for ducat values (locked phase 03, 2026-05-25): WFCD/warframe-items static JSON (MIT, build-time bundled to `data/ducats.json`) → `api.warframe.market/v1` (REST fallback) → wiki scrape (last resort). Vision lib: RapidOCR (always-free, no API key). See `plans/ducat-lens-bootstrap-20260524/_architecture.md`.
 
 ---
 
@@ -85,6 +85,7 @@ Defined in `.claude/agents/*.md`. Each agent has a CV at `agents/<name>/profile.
 | 🔥 | **Crucible** | Test Architect |
 | 🔨 | **Forge** | Implementation Agent |
 | 📯 | **Herald** | Release Manager |
+| 🔎 | **Inquisitor** | PR Reviewer |
 | ✨ | **Lumen** | Visual Director |
 | 🛡️ | **Sentinel** | Quality Guardian |
 | 🔒 | **Warden** | Dependency Warden |
@@ -105,11 +106,15 @@ Examples:
 
 - `frontend/` — React + Vite + TypeScript app
 - `backend/` — FastAPI Python app
+- `backend/scripts/` — build-time helpers (`fetch_ducats.py` populates `data/ducats.json`)
 - `data/` — ducat values JSON bundle (`ducats.json`)
 - `plans/` — plan artifacts (subfolder pattern; see Plan format section)
 - `.claude/agents/` — agent runtime specs
 - `.claude/skills/` — lifecycle skills (`plan-enforce`, `git-*`, `ui-ux-pro-max`, `impeccable`)
 - `agents/*/` — persona CV files
+- `knowledge/audits/` — Inquisitor 🔎 (PR Reviewer) + Warden 🔒 (Dependency Warden) audit reports
+- `knowledge/design/` — Lumen ✨ (Visual Director) design briefs + visual audits
+- `knowledge/research/` — Augur 🔮 (Senior Research Analyst) research outputs
 - `image.png` — test fixture for vision pipeline
 
 ---
@@ -194,12 +199,15 @@ No AI/agent attribution in commit messages, PR titles, PR bodies, branch names, 
 
 All verifiers return `[PASS]` / `[FAIL]` / `[UNCERTAIN]`; Cipher 🔓 (Dev-Team Orchestrator) routes fixes to Forge 🔨 (Implementation Agent).
 
+> **Inquisitor 🔎 (PR Reviewer) is NOT in this table** — it is not auto-triggered per file edit. It runs only at the PR boundary on explicit Cipher 🔓 (Dev-Team Orchestrator) invocation, in parallel with Lumen ✨ (Visual Director) and Warden 🔒 (Dependency Warden).
+
 ### Dev work gate chain
 
 | Gate | Owner | Trigger | Blocks |
 |---|---|---|---|
 | Visual/UX | Lumen ✨ (Visual Director) | Changes touching visual surfaces | Herald 📯 (Release Manager) until Critical/High clear |
 | Dep/security | Warden 🔒 (Dependency Warden) | New dep, lockfile diff | Herald 📯 (Release Manager) until PASS/ADVISORY |
+| Cross-file PR review | Inquisitor 🔎 (PR Reviewer) | Pre-Herald PR creation OR user manual request | Herald 📯 (Release Manager) until PASS/ADVISORY |
 | Release | Herald 📯 (Release Manager) | All prior gates passed | User (sole merge authority) |
 
 ### Pre-coding sync gate
@@ -216,6 +224,7 @@ Before dispatching Forge 🔨 (Implementation Agent) to write or edit code, Ciph
 | Agent | Permitted commands |
 |---|---|
 | Herald 📯 (Release Manager) | git / gh operations |
+| Inquisitor 🔎 (PR Reviewer) | `git diff main...HEAD`, `git diff main...HEAD -- <file>`, `git log main...HEAD --oneline`, `gh pr view <number>`, `gh pr view <number> --json title,body,files,state`, `gh pr review <number> --comment --body "<body>"`, `gh pr comment <number> --body "<body>"` |
 | Lumen ✨ (Visual Director) | `pnpm dlx impeccable *`, `pnpm agent-browser *` |
 | Warden 🔒 (Dependency Warden) | `pnpm audit`, `pnpm outdated`, `pnpm list`, `pnpm info`, `node --version` |
 | Atrium 🏛️ (Frontend Architect) | `pnpm install` for production/build-tooling deps |
