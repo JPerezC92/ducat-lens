@@ -56,6 +56,10 @@ desktop.ini
 # Inherited skills not used in this project (kept locally, untracked in repo)
 .claude/skills/sdp-runbook/
 
+# Local-only plan artifacts (not relevant to repo consumers)
+plans/scrub-ai-attribution-20260524/
+plans/_archive/
+
 # Tooling artifacts
 commit.txt
 pr-draft.md
