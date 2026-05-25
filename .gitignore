@@ -4,7 +4,8 @@ node_modules/
 dist/
 build/
 .vite/
-frontend/.astro/             # Astro internal cache (type-gen, route manifest)
+# Astro internal cache (type-gen, route manifest)
+frontend/.astro/
 
 # Python
 __pycache__/
@@ -53,6 +54,7 @@ desktop.ini
 
 # Claude Code local state
 .claude/settings.local.json
+.claude/worktrees/
 
 # Inherited skills not used in this project (kept locally, untracked in repo)
 .claude/skills/sdp-runbook/
