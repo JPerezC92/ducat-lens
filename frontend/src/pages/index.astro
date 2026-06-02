@@ -36,17 +36,6 @@ const jsonLd = {
       signup, no install.
     </p>
 
-    <figure class="crt-duotone w-full max-w-sm mx-auto">
-      <img
-        src="/images/hero-prime.png"
-        alt="Stylized Warframe Prime silhouette rendered in CRT duotone"
-        width={512}
-        height={512}
-        loading="eager"
-        fetchpriority="high"
-      />
-    </figure>
-
     <h2 class="font-heading text-xl md:text-2xl tracking-wide text-text">How it works</h2>
     <ol class="list-decimal pl-6 space-y-2">
       <li>Upload a screenshot of your Warframe Ducat Kiosk inventory.</li>
@@ -56,7 +45,7 @@ const jsonLd = {
       </li>
     </ol>
 
-    <figure class="crt-duotone mt-3 max-w-md">
+    <figure class="crt-duotone max-w-md">
       <img
         src="/images/example-kiosk.jpg"
         alt="Example Warframe Ducat Kiosk inventory screenshot showing Prime parts"
@@ -79,7 +68,7 @@ const jsonLd = {
       </li>
     </ul>
 
-    <section class="mt-12">
+    <section>
       <DucatAnalyzer client:load />
     </section>
   </main>

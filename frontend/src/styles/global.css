@@ -46,10 +46,10 @@
     position: fixed;
     inset: 0;
     z-index: -1;
-    background-image: url("/images/bg-warframe.png");
+    background-image: url("/images/bg-warframe.jpg");
     background-size: cover;
     background-position: center;
-    filter: grayscale(1) sepia(1) hue-rotate(160deg) brightness(0.12) saturate(3) contrast(1.5);
+    filter: grayscale(0.6) sepia(0.4) hue-rotate(160deg) brightness(0.15) saturate(2.5) contrast(1.2);
     pointer-events: none;
   }
   @media (max-width: 767px) {
