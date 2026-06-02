@@ -41,6 +41,20 @@
     color: var(--color-text-primary);
     font-family: var(--font-body);
   }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: url("/images/bg-warframe.png");
+    background-size: cover;
+    background-position: center;
+    filter: grayscale(1) sepia(1) hue-rotate(160deg) brightness(0.12) saturate(3) contrast(1.5);
+    pointer-events: none;
+  }
+  @media (max-width: 767px) {
+    body::before { display: none; }
+  }
   * {
     @apply border-border outline-ring/50;
   }

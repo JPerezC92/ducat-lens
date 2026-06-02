@@ -173,3 +173,154 @@ Change `<section class="mt-12">` to `<section>` (let `space-y-8` govern) or `<se
 - CLS score: Source-based proxy check only (explicit width/height on both images). Browser-measured CLS value is unverified.
 - Scanline stride at 1px: source-verified only (CSS unchanged from prior audit). Not pixel-verified.
 - Reduced-motion scanline dimming: source-verified only (CSS unchanged). Visual difference at screenshot compression not distinguishable.
+
+---
+
+## Re-audit 2026-06-02 — Background image
+
+### Header
+
+**Re-audit date:** 2026-06-02
+**Trigger:** Phase 01 (add-landing-bg-image-20260602) introduced `body::before` pseudo-element in `global.css` — a full-viewport fixed background image (`/images/bg-warframe.png`) with accent-blue duotone filter and mobile suppression rule.
+**Auditor:** Lumen ✨ (Visual Director)
+**Prior verdict (this file):** PASS with Medium findings
+**This section verdict:** PASS — zero Critical, zero High. Background image renders correctly. WCAG AA intact. Mobile suppression confirmed.
+
+### Browser State
+
+URL opened: `http://localhost:4322/` (port conflict from phase runbook — server at 4322, not 4321).
+Console errors: zero. Fact — `pnpm agent-browser errors` returned empty output.
+Server responded: HTTP 200. Fact.
+Screenshot full-page = true for desktop (1440x900) and mobile (375x812).
+
+### Scope
+
+Files reviewed:
+- `frontend/src/styles/global.css` — `body::before` block lines 44-57
+- `frontend/src/pages/index.astro` — page structure (unchanged from prior audit)
+- `frontend/public/images/bg-warframe.png` — confirmed present, 75.3KB
+
+Modes tested: Dark only (site is permanently dark). Source-readable.
+
+### CSS Implementation Review — body::before
+
+Source-verified from `frontend/src/styles/global.css` lines 44-57:
+
+```css
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url("/images/bg-warframe.png");
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(1) sepia(1) hue-rotate(160deg) brightness(0.12) saturate(3) contrast(1.5);
+  pointer-events: none;
+}
+@media (max-width: 767px) {
+  body::before { display: none; }
+}
+```
+
+Design law compliance check:
+- `z-index: -1` — pseudo-element is behind all page content. Fact (source).
+- `pointer-events: none` — no interactivity impact. Fact (source).
+- `position: fixed` — background does not scroll with page (static atmospheric layer). Fact (source).
+- `filter: brightness(0.12)` — image rendered at 12% brightness; accent-blue hue-rotate + saturate applied for Warframe 1999 tonal fidelity. Fact (source).
+- Mobile breakpoint: `display: none` at `max-width: 767px` — suppresses the background on narrow viewports where it would produce visual noise rather than side-margin atmosphere. Fact (source).
+
+### Findings
+
+| # | Severity | Location | Finding | Fix Route |
+|---|----------|----------|---------|-----------|
+| None | — | — | Zero new findings introduced by background image. All checks PASS. | — |
+
+No new Critical, High, Medium, or Low findings. The background implementation is correct on all evaluated axes.
+
+### Background Render Verification (Desktop 1440x900)
+
+Full-page screenshot taken via `pnpm agent-browser screenshot --full` at 1440x900 viewport.
+Screenshot full-page = true.
+
+Visual observations from full-page screenshot:
+- Background silhouette (Warframe figure) visible in both left and right side margins, outside the `max-w-3xl` content column. The figure reads as a faint dark atmospheric presence in the background. Fact (screenshot).
+- Accent-blue tint applied correctly — the silhouette has the same cyan-teal character as the rest of the design system. Fact (screenshot).
+- Content column text (h1 "ducat-lens", paragraph, h2 headings, body text) is fully legible against the `#0d0f14` body background. No readability degradation from background layer. Fact (screenshot).
+- No z-index conflict: no content is hidden or obscured by the background pseudo-element. Fact (screenshot + eval).
+
+Z-index verification:
+- `getComputedStyle(document.querySelector('main')).zIndex` → `'auto'` (stacking order: 0). Fact.
+- `getComputedStyle(document.querySelector('main')).position` → `'static'`. Fact.
+- Fixed elements with z-index > 0: zero. Evaluated via `Array.from(document.querySelectorAll('*')).filter(el => getComputedStyle(el).position === 'fixed' && parseInt(getComputedStyle(el).zIndex) > 0)` → empty result. Fact.
+- Conclusion: `body::before` at `z-index: -1` is the sole fixed layer. It is behind all content. No conflict.
+
+Body background color: `getComputedStyle(document.body).backgroundColor` → `'rgb(13, 15, 20)'` = `#0d0f14`. Matches `--color-bg` design token. Fact. The pseudo-element does not alter the computed background-color of `body` — text contrast calculations remain against `#0d0f14`.
+
+### Mobile Suppression Verification (375x812)
+
+Viewport resized to 375x812 via `pnpm agent-browser set viewport 375 812`.
+Confirmed: `window.innerWidth` = 375. Fact.
+Full-page screenshot taken via `pnpm agent-browser screenshot --full` at 375x812.
+Screenshot full-page = true.
+
+Visual observations from mobile screenshot:
+- No background silhouette visible in side margins or anywhere on the page at 375px. The page renders with a clean solid `#0d0f14` background throughout. Fact (screenshot).
+- No background image bleed at any scroll position in the full-page capture. Fact (screenshot).
+
+Media query match verification:
+- `window.matchMedia('(max-width: 767px)').matches` → `true` at 375px viewport. Fact.
+- Combined with CSS source `@media (max-width: 767px) { body::before { display: none; } }` — the suppression rule is active and visually confirmed. Fact.
+
+### WCAG AA Contrast Re-check
+
+Background pseudo-element does not change `body` computed `background-color`. Text contrast is still measured against `#0d0f14`. Results are unchanged from prior audit:
+
+| Element | Color | Background | Ratio | AA threshold | Status |
+|---|---|---|---|---|---|
+| H1 (accent-blue) | `#3fc8e0` | `#0d0f14` | 9.63:1 | 3:1 (large bold) | PASS AA + AAA |
+| H2 (text-primary) | `#e8eaf0` | `#0d0f14` | 15.94:1 | 3:1 (large bold) | PASS AA + AAA |
+| Body text (text-primary) | `#e8eaf0` | `#0d0f14` | 15.94:1 | 4.5:1 (normal) | PASS AA + AAA |
+| Muted text (text-muted) | `#6e7e9c` | `#0d0f14` | 4.68:1 | 4.5:1 (normal) | PASS AA |
+
+H1 color confirmed via eval: `getComputedStyle(document.querySelector('h1')).color` → `'rgb(63, 200, 224)'`. Fact.
+H1 font-weight confirmed: `getComputedStyle(document.querySelector('h1')).fontWeight` → `'700'`. Fact.
+Paragraph color confirmed: `getComputedStyle(document.querySelector('main p')).color` → `'rgb(110, 126, 156)'`. Fact.
+Body background confirmed: `getComputedStyle(document.body).backgroundColor` → `'rgb(13, 15, 20)'`. Fact.
+
+All four elements pass WCAG AA. No contrast regression introduced by the background image change. The critical clarification: because `body::before` uses `z-index: -1` behind all content, the effective background for text remains the opaque `#0d0f14` body color — not the image layer. Background image at 12% brightness behind a solid dark body is atmosphere only, not a legibility concern.
+
+### Rule Compliance
+
+- Rule 1 (Spacing rhythm): No spacing changes in this phase. Prior Medium findings (mt-3, mt-12) unchanged. No new spacing collapse introduced. PASS.
+- Rule 2 (List markers): No list changes. Prior audit confirmed decimal/disc markers with 24px padding. PASS.
+- Rule 3 (Full-page screenshot): Desktop full-page = true (confirmed via `--full` flag). Mobile full-page = true (confirmed via `--full` flag). PASS.
+- Rule 4 (Visual diff for RESOLVED): No prior findings claimed RESOLVED in this section. Not applicable.
+- Rule 5 (Honest-render gate): Desktop screenshot shows styled render — Rajdhani/Barlow Condensed heading visible, accent-blue color applied, dark background confirmed, CRT duotone on images active. Not unstyled HTML. PASS.
+- Rule 6 (Spot-check evidence): See Spot-Check Evidence section below.
+
+### Spot-Check Evidence
+
+Three specific visual claims backed by eval evidence per Rule 6.
+
+**Claim 1:** Background image is rendered behind all page content with no z-index conflict. At 1440px desktop, the Warframe silhouette is visible in the side margins, and the content column (h1, paragraphs, figures) sits fully on top.
+Evidence: `getComputedStyle(document.querySelector('main')).zIndex` → `'auto'`. Fixed elements with `zIndex > 0`: zero (empty array from querySelectorAll filter). Full-page screenshot shows content fully legible, no content hidden. Coord: content column occupies horizontal center; silhouette visible left and right margins. Label: Fact.
+
+**Claim 2:** Body background color is `#0d0f14` (not transparent or overridden by the pseudo-element). Text contrast is measured against this solid dark color, not the image layer.
+Evidence: `getComputedStyle(document.body).backgroundColor` → `'rgb(13, 15, 20)'` = `#0d0f14`. Computed luminance = 0.0048. H1 contrast ratio = 9.63:1, paragraph contrast ratio = 4.68:1. Both above WCAG AA thresholds. Label: Fact.
+
+**Claim 3:** At 375px viewport, `window.matchMedia('(max-width: 767px)').matches` = true and the full-page mobile screenshot shows no background silhouette — clean solid dark background throughout the page.
+Evidence: eval → `true`. Mobile screenshot at coord 0,0 to 375,812 shows no figure/silhouette in side margins or anywhere. CSS source confirms `body::before { display: none }` at this breakpoint. Label: Fact.
+
+### Verdict
+
+**PASS — zero Critical, zero High.**
+
+The `body::before` background image implementation is correct:
+1. Background renders visually as intended: faint accent-blue silhouette in side margins at desktop.
+2. No z-index conflict — content is fully legible and accessible.
+3. WCAG AA contrast is unchanged: all text elements still pass (9.63:1, 15.94:1, 4.68:1).
+4. Mobile suppression works: background is hidden at 375px, confirmed via media query match and visual screenshot.
+5. Zero console errors.
+
+Herald 📯 (Release Manager) remains unblocked. Prior Medium findings (mt-3, mt-12 spacing) carry forward as advisory backlog — not affected by this change.
